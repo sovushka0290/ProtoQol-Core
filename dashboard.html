@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtoQol | B2B Enterprise Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #f8fafc; color: #0f172a; padding: 40px; font-family: 'Inter', sans-serif; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .card { background: #fff; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .stat-val { font-size: 2.5rem; font-weight: 800; color: #3b82f6; font-family: 'Space Grotesk'; }
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.85rem; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+        .verdict-adal { color: #10b981; font-weight: bold; }
+        .verdict-aram { color: #f43f5e; font-weight: bold; }
+        .input-group { display: flex; gap: 10px; margin-top: 20px; }
+        input { padding: 12px 20px; border-radius: 12px; border: 1px solid #e2e8f0; flex: 1; outline: none; }
+        button { padding: 12px 24px; border-radius: 12px; border: none; background: #0f172a; color: #fff; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #3b82f6; transform: translateY(-2px); }
+        .key-reveal { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 15px; display: none; }
+        .key-val { font-weight: bold; font-family: 'JetBrains Mono'; color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <div>
+                <h1 style="font-family: 'Space Grotesk'">Enterprise Dashboard</h1>
+                <p style="color: #64748b">B2B Management Console v1.0</p>
+            </div>
+            <a href="index.html" style="text-decoration: none; color: #3b82f6; font-weight: bold;">← Back to Landing</a>
+        </div>
+
+        <div class="stats-grid card">
+            <div>
+                <div class="stat-label">Total Impact Points</div>
+                <div id="total-impact" class="stat-val">0</div>
+            </div>
+            <div>
+                <div class="stat-label">Verified Deeds</div>
+                <div id="total-deeds" class="stat-val">0</div>
+            </div>
+            <div>
+                <div class="stat-label">Biy Node Status</div>
+                <div class="stat-val" style="color: #10b981">ACTIVE</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-family: 'Space Grotesk'">API Gateway Security</h2>
+            <p>Generate unique API keys for your applications. All truth etching requires valid headers.</p>
+            <div class="input-group">
+                <input type="text" id="client-name" placeholder="Application Name (e.g. My-IoT-Silo)">
+                <button onclick="generateKey()">Generate API Key</button>
+            </div>
+            <div id="key-section" class="key-reveal">
+                <p>New API Key (Keep secure!): <span id="new-key" class="key-val"></span></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-family: 'Space Grotesk'">Recent Verification History</h2>
+            <div id="table-loading">Syncing with Solana Devnet...</div>
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Verdict</th>
+                        <th>Impact</th>
+                        <th>TX Hash (Solana)</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000/api/v1";
+        const DEFAULT_KEY = "PQ_LIVE_DEMO_SECRET";
+
+        async function fetchStats() {
+            try {
+                const res = await fetch(`${API_BASE}/dashboard/stats`, {
+                    headers: { "X-API-Key": DEFAULT_KEY }
+                });
+                const data = await res.json();
+                
+                document.getElementById('total-impact').textContent = data.total_impact;
+                document.getElementById('total-deeds').textContent = data.total_verifications;
+                
+                const tbody = document.getElementById('history-body');
+                tbody.innerHTML = '';
+                data.recent_activity.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${new Date(row.timestamp).toLocaleTimeString()}</td>
+                        <td class="${row.verdict === 'ADAL' ? 'verdict-adal' : 'verdict-aram'}">${row.verdict}</td>
+                        <td>+${row.impact_points}</td>
+                        <td><a href="https://explorer.solana.com/tx/${row.tx_hash}?cluster=devnet" target="_blank">${row.tx_hash.substring(0,24)}...</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('table-loading').style.display = 'none';
+            } catch (err) {
+                console.error("Dashboard Sync Failed:", err);
+            }
+        }
+
+        async function generateKey() {
+            const name = document.getElementById('client-name').value;
+            if(!name) return;
+            
+            const formData = new FormData();
+            formData.append('new_client_name', name);
+            
+            const res = await fetch(`${API_BASE}/dashboard/generate_key`, {
+                method: 'POST',
+                headers: { "X-API-Key": DEFAULT_KEY },
+                body: formData
+            });
+            const data = await res.json();
+            
+            document.getElementById('key-section').style.display = 'block';
+            document.getElementById('new-key').textContent = data.api_key;
+        }
+
+        fetchStats();
+        setInterval(fetchStats, 5000);
+    </script>
+</body>
+</html>

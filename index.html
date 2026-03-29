@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ProtoQol — ESG Integrity Engine | Ethics as a Service on Solana</title>
+    <meta name="description" content="ProtoQol transforms real-world social impact into immutable on-chain proofs. AI-powered ESG auditing for enterprises, NGOs, and governments on Solana." />
+    <meta name="theme-color" content="#06080D" />
+    <meta property="og:title" content="ProtoQol — Nomad Cyberpunk Protocol" />
+    <meta property="og:description" content="We take real-world actions, evaluate them with AI, and crystallize them into immutable on-chain data." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script src="script.js" defer></script>
+    <style>
+        .iridescent-card { 
+            position: relative; overflow: hidden; height: 720px; padding: 4.5rem 3rem; border-radius: 48px; 
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0.8; transform-style: preserve-3d;
+            z-index: 5;
+        }
+
+        /* Initially Stealth Items */
+        .card-content > *:not(.card-price-wrap) {
+            opacity: 0; transform: translateY(40px) translateZ(50px); filter: blur(20px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-price-wrap { 
+            opacity: 1; transform: scale(1.4) translateZ(100px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            color: rgba(0,0,0,0.8); flex-grow: 0; margin: 0;
+        }
+
+        .pricing-grid-v7:hover .iridescent-card { opacity: 0.2; transform: scale(0.9) translateZ(-100px); filter: blur(5px); }
+
+        .iridescent-card:hover { 
+            transform: translateY(-20px) scale(1.05) rotateX(10deg) rotateY(5deg) !important; 
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(40px) saturate(150%); -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5); 
+            opacity: 1 !important; z-index: 100; filter: blur(0) !important;
+            justify-content: flex-start; align-items: flex-start;
+        }
+
+        .iridescent-card:hover .card-content > * { opacity: 1; transform: translateY(0) translateZ(0); filter: blur(0); }
+        .iridescent-card:hover .card-price-wrap { transform: scale(1) translateZ(0); margin-bottom: 2rem; }    /* ═══════════════════════════════════════
+           ABOUT MODAL — Nomad Cyberpunk
+           ═══════════════════════════════════════ */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 2000; opacity: 0; pointer-events: none; transition: 0.6s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        
+        .about-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -40%) scale(0.9);
+            width: 90%; max-width: 800px; padding: 4rem; border-radius: 40px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            color: #fff; z-index: 2001; transition: 0.8s cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; pointer-events: none;
+        }
+        .about-modal.active { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: all; }
+        
+        .about-title { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.3rem; color: #8B5CF6; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
+        .about-text { font-size: 1.15rem; line-height: 1.6; color: rgba(255,255,255,0.8); text-align: left; margin-bottom: 2.5rem; }
+        .about-bullets { list-style: none; padding: 0; margin-bottom: 3rem; text-align: left; }
+        .about-bullets li { margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: flex-start; }
+        .about-bullets b { color: #fff; font-weight: 700; }
+        
+        .tech-stack { display: flex; gap: 2rem; align-items: center; margin-bottom: 3rem; opacity: 0.5; filter: grayscale(1); }
+        .tech-icon { height: 24px; opacity: 0.5; }
+        
+        .btn-close-modal {
+            position: absolute; top: 2rem; right: 2rem; width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid rgba(255, 215, 0, 0.3); background: none; color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .btn-close-modal:hover { background: rgba(255, 215, 0, 0.1); border-color: rgba(255, 215, 0, 0.8); transform: scale(1.1); }
+
+        /* Pipeline Section Glass Styles */
+        .pipeline-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 5rem; perspective: 2000px; padding: 2rem 0; z-index: 10; position: relative;}
+        
+        .pipe-card { 
+            position: relative; overflow: hidden; padding: 4.5rem 3rem; border-radius: 40px; 
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 480px; transform-style: preserve-3d;
+            animation: float-v1 6s ease-in-out infinite; 
+        }
+        .pipe-card:nth-child(2) { animation-delay: 1.5s; animation-name: float-v2; }
+        .pipe-card:nth-child(3) { animation-delay: 3s; animation-name: float-v1; }
+
+        @keyframes float-v1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes float-v2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(15px); } }
+
+        .pipe-card::before {
+            content: ""; position: absolute; inset: 0; padding: 2px;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #00F2FE, #FFD700);
+            background-size: 200% auto;
+            animation: gradientShift 6s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            opacity: 0.1; transition: 0.6s ease;
+        }
+        .pipe-card:hover::before { opacity: 0.9; filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.5)); }
+        
+        .pipe-card:hover { 
+            transform: translateY(-20px) scale(1.03) rotateX(10deg) rotateY(5deg) !important;
+            background: rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 50px 100px rgba(0,0,0,0.2);
+            animation-play-state: paused;
+        }
+        
+        .card-icon-v9 { font-size: 2.8rem; margin-bottom: 2rem; display: block; filter: saturate(1.5); }
+        .pipe-card .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 1.2rem; color: #111; letter-spacing: -1px; }
+        .pipe-card .card-text { font-size: 1.15rem; color: #444; line-height: 1.6; font-weight: 500; font-family: 'Inter', sans-serif; }
+        
+        .card-stage-badge { 
+            position: absolute; top: 1.5rem; right: 1.5rem; 
+            padding: 4px 12px; border-radius: 8px; 
+            background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1);
+            font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; color: #888;
+        }
+        .card-meta-pills { display: flex; flex-direction: column; gap: 10px; margin-top: 1.5rem; }
+        .meta-pill { 
+            display: flex; align-items: center; gap: 8px; 
+            font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 6px 12px; border-radius: 8px; background: rgba(0,0,0,0.03); width: fit-content;
+        }
+        
+        /* Step 2 Progress UI */
+        .audit-progress-wrap { margin-top: 1.5rem; }
+        .progress-cells { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 1rem; }
+        .p-cell { height: 4px; border-radius: 2px; background: rgba(0,0,0,0.05); }
+        .p-cell.active { background: #B371FF; }
+
+        .card-action-link { 
+            display: flex; align-items: center; gap: 10px; margin-top: 2rem;
+            font-size: 0.85rem; font-weight: 800; color: #111; letter-spacing: 0.5px; text-decoration: none; text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .card-action-link:hover { color: #B371FF; transform: translateX(5px); }
+    </style>
+</head>
+<body>
+
+    <!-- About Modal -->
+    <div id="about-overlay" class="modal-overlay"></div>
+    <div id="about-modal" class="about-modal">
+        <button class="btn-close-modal" id="close-about">✕</button>
+        <div class="about-title" style="text-align: center;">О ПРОЕКТЕ</div>
+        <p class="about-text">
+            ProtoQol — это инфраструктурный мост между физическим действием и неизменяемой истиной блокчейна. Мы создали децентрализованную систему ESG-аудита, где корпоративная ответственность и благотворительность получают математическое доказательство.
+        </p>
+        <ul class="about-bullets">
+            <li><span>⚖️</span> <div><b>Суд Трех Биев:</b> Мультиагентный ИИ-консенсус мгновенно проверяет отчеты и отсекает фрод.</div></li>
+            <li><span>⚡</span> <div><b>Zero-Friction Web3:</b> Никаких криптокошельков для пользователей. Бэкенд сам генерирует PDA-записи и оплачивает газ в сети Solana.</div></li>
+            <li><span>🏢</span> <div><b>Степное Право в Цифре:</b> Философия традиций Асар и Жеты Жаргы, упакованная в API для современного бизнеса.</div></li>
+        </ul>
+        
+        <div class="tech-stack">
+            <span style="font-size: 0.8rem; letter-spacing: 0.1rem;">POWERED BY —</span>
+            <span style="font-weight: 700;">SOLANA</span>
+            <span style="font-weight: 700;">FASTAPI</span>
+            <span style="font-weight: 700;">GEMINI 2.0</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+          STICKY FULL-WIDTH HEADER
+          ═══════════════════════════════════════ -->
+    <nav id="navbar" class="navbar-v6 sticky-header">
+        <div class="header-inner-v6" style="max-width: 1400px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 40px;">
+            <!-- Logo -->
+            <div class="logo-v6">PROTOQOL.PRO</div>
+
+            <!-- Main Menu -->
+            <ul class="nav-links-v6">
+                <li><a href="#how-it-works">Technology ▾</a></li>
+                <li><a href="dashboard.html" style="color: #3b82f6;">Dashboard B2B</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <!-- Actions -->
+            <div class="nav-actions-v6">
+                <button id="open-about" class="btn-outline-v6">Tutorial</button>
+                <a href="#login" class="btn-filled-v6">Launch App</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ═══════════════════════════════════════
+         PHASE 1: HERO — The Dissecting Engine
+         ═══════════════════════════════════════ -->
+    <header id="hero" class="hero" style="min-height: 90vh; display: flex; align-items: center; position: relative; overflow: visible; background: #FFFFFF;">
+        <div class="section-inner" style="z-index: 10; max-width: 1400px; margin: 0 auto; padding: 0 40px; width: 100%;">
+            <div class="hero-split" style="display: flex; align-items: center; gap: 4rem;">
+                <div class="hero-left" style="flex: 1;">
+                    <span class="hero-label reveal">Integrity Infrastructure v2.0</span>
+                    <h1 class="hero-title reveal reveal-delay-1" style="font-size: clamp(3.2rem, 5vw, 5.5rem); display: flex; flex-direction: column;">
+                        <span class="line-l">Real-world actions.</span>
+                        <span class="line-r accent">On-chain truth.</span>
+                    </h1>
+                    <p class="hero-subtitle reveal reveal-delay-2" style="max-width: 550px; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <span class="line-l">AI-evaluated ESG data crystallized into</span>
+                        <span class="line-r">immutable Solana proofs. Audit-ready. Instant.</span>
+                    </p>
+                    
+                    <div class="stats-bar">
+                        <div class="stat-card">
+                            <div class="stat-number">14,208</div>
+                            <div class="stat-caption">Integrity Audits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">3</div>
+                            <div class="stat-caption">Active Missions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">42 ms</div>
+                            <div class="stat-caption">Oracle Latency</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">99.8%</div>
+                            <div class="stat-caption">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-right" style="flex: 0.8; display: flex; justify-content: center; position: relative;">
+                    <video src="https://labs.google/fx/api/og-video/5i0pu1lf50000" autoplay muted loop playsinline style="width: 180%; max-width: 1000px; transform: scale(1.5) translateX(-8%); mix-blend-mode: multiply; pointer-events: none;"></video>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── Trendy Transition Marquee ── -->
+    <div class="marquee-transition">
+        <div class="marquee-inner">
+            <div class="marquee-content">
+                <span>TRANSFORMING DATA INTO TRUST • </span>
+                <span>IMMUTABLE AI CONSENSUS • </span>
+                <span>SOLANA FINALITY @ SCALE • </span>
+                <span>NOMAD INTEGRITY ENGINE • </span>
+                <span>TRANSFORMING DATA INTO TRUST • </span>
+                <span>IMMUTABLE AI CONSENSUS • </span>
+                <span>SOLANA FINALITY @ SCALE • </span>
+                <span>NOMAD INTEGRITY ENGINE • </span>
+                <span>TRANSFORMING DATA INTO TRUST • </span>
+                <span>IMMUTABLE AI CONSENSUS • </span>
+                <span>SOLANA FINALITY @ SCALE • </span>
+                <span>NOMAD INTEGRITY ENGINE • </span>
+                <span>TRANSFORMING DATA INTO TRUST • </span>
+                <span>IMMUTABLE AI CONSENSUS • </span>
+                <span>SOLANA FINALITY @ SCALE • </span>
+                <span>NOMAD INTEGRITY ENGINE • </span>
+                <span>TRANSFORMING DATA INTO TRUST • </span>
+                <span>IMMUTABLE AI CONSENSUS • </span>
+                <span>SOLANA FINALITY @ SCALE • </span>
+                <span>NOMAD INTEGRITY ENGINE • </span>
+                <span>TRANSFORMING DATA INTO TRUST • </span>
+                <span>IMMUTABLE AI CONSENSUS • </span>
+                <span>SOLANA FINALITY @ SCALE • </span>
+                <span>NOMAD INTEGRITY ENGINE • </span>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ═══════════════════════════════════════
+         HOW IT WORKS — Pipeline Visualization 
+         ═══════════════════════════════════════ -->
+    <section id="how-it-works" class="pipeline-section" aria-label="How the verification pipeline works" style="background: #FFFFFF; position: relative; z-index: 10; min-height: 100vh; display: flex; align-items: center; padding: 120px 0;">
+        <!-- Background Video with Darkening Overlay for Visibility -->
+        <div style="position: absolute; inset: 0; z-index: 1;">
+            <video id="pipe-bg-video" autoplay muted loop playsinline 
+                   style="width: 100%; height: 100%; object-fit: cover; opacity: 0.25; filter: blur(5px);">
+                <source src="https://labs.google/fx/api/og-video/6pa1ad62t0000" type="video/mp4">
+            </video>
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0.4));"></div>
+        </div>
+
+        <div class="section-inner" style="position: relative; z-index: 10; width: 100%;">
+            <span class="section-label">The Pipeline</span>
+            <h2 class="section-title">How ProtoQol <span class="accent">Works</span></h2>
+            <p class="section-subtitle">From physical action to immutable proof in under 3 seconds.</p>
+
+            <div class="pipeline-grid">
+                <!-- Step 1: Data Ingestion -->
+                <div class="pipe-card reveal">
+                    <div class="card-stage-badge">STAGE 01</div>
+                    <div class="card-inner-v9">
+                        <span class="card-icon-v9" style="background: rgba(0,0,0,0.03); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin-bottom: 2rem;">📥</span>
+                        <h3 class="card-title">Data Ingestion</h3>
+                        <p class="card-text">Шлюзовое API для мгновенной передачи ESG-отчетов и IoT данных в систему.</p>
+                        
+                        <div class="card-meta-pills">
+                            <div class="meta-pill">🛡️ AES-256 ENCRYPTION</div>
+                            <div class="meta-pill">⚡ ZERO-FRICTION INGRESS</div>
+                        </div>
+                    </div>
+                    <a href="#pricing" class="card-action-link">Initialize Stream ➔</a>
+                </div>
+
+                <!-- Step 2: AI Council -->
+                <div class="pipe-card reveal reveal-delay-1">
+                    <div class="card-stage-badge">STAGE 02</div>
+                    <div class="card-inner-v9">
+                        <span class="card-icon-v9" style="background: rgba(0,0,0,0.03); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin-bottom: 2rem;">⚖️</span>
+                        <h3 class="card-title">AI Council Audit</h3>
+                        <p class="card-text">Три независимых агента (Аудитор, Скептик и Комплаенс) проверяют контент.</p>
+                        
+                        <div class="audit-progress-wrap">
+                            <div class="progress-cells">
+                                <div class="p-cell active"></div>
+                                <div class="p-cell active"></div>
+                                <div class="p-cell"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 800; color: #888;">
+                                <span>ORCHESTRATOR ALPHA</span>
+                                <span style="color: #B371FF;">VERIFYING...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#pricing" class="card-action-link">View AI Logic ➔</a>
+                </div>
+
+                <!-- Step 3: Solana Finality -->
+                <div class="pipe-card reveal reveal-delay-2">
+                    <div class="card-stage-badge">STAGE 03</div>
+                    <div class="card-inner-v9">
+                        <span class="card-icon-v9" style="background: rgba(0,0,0,0.03); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin-bottom: 2rem;">💎</span>
+                        <h3 class="card-title">Solana Registry</h3>
+                        <p class="card-text">Неизменяемая кристаллизация и запись хэша в блокчейн. Ваша репутация вечна.</p>
+                        
+                        <div style="margin-top: 1.5rem; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; font-family: 'JetBrains Mono'; font-size: 0.7rem; color: #555;">
+                            SOL-HASH: 7xk2...9qLM...v4X
+                        </div>
+                    </div>
+                    <a href="#pricing" class="card-action-link">Explore Ledger ➔</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+          B2B INFRASTRUCTURE — Floating Window
+          ═══════════════════════════════════════ -->
+    <section id="infrastructure" class="window-section">
+        <div class="section-inner floating-window">
+            <div class="window-content" style="display: flex; align-items: center; gap: 4rem; padding: 60px;">
+                
+                <!-- Left Content -->
+                <div class="infra-text-content" style="flex: 1;">
+                    <span class="section-label">System Engine v2.0</span>
+                    <h2 class="section-title" style="font-size: 3.5rem; line-height: 0.95; margin: 1.5rem 0;">Real-world <br/>actions.<br/><span class="accent">On-chain truth.</span></h2>
+                    <p class="section-subtitle" style="color: #666; max-width: 440px; margin-bottom: 2.5rem;">
+                        AI-evaluated ESG data crystallized into immutable Solana proofs. Audit-ready. Instant.
+                    </p>
+                    
+                    <!-- Stats Widget -->
+                    <div class="mini-stats-grid">
+                        <div class="mini-stat"><strong>14k</strong><span>Audits</span></div>
+                        <div class="mini-stat"><strong>42ms</strong><span>Latency</span></div>
+                        <div class="mini-stat"><strong>99.9%</strong><span>Uptime</span></div>
+                    </div>
+                </div>
+
+                <!-- Right Visual -->
+                <div class="infra-visual-content" style="flex: 1.2;">
+                    <video 
+                        src="https://labs.google/fx/api/og-video/50p21hqs20000" 
+                        autoplay muted loop playsinline 
+                        class="whisk-video-final" style="width: 100%; border-radius: 30px; filter: saturate(1.1);">
+                    </video>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+          JUICY PRICING GRID — Floating Window
+          ═══════════════════════════════════════ -->
+    <section id="pricing" class="window-section" style="padding: 100px 0; background: none; position: relative; overflow: hidden;">
+        <!-- Pricing Layer 1: Enhanced Atmospheric Background -->
+        <div class="pricing-bg-layer" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.25; filter: blur(10px);">
+            <video src="https://labs.google/fx/api/og-video/5s1d0m2df0000" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply;"></video>
+        </div>
+
+        <div class="section-inner pricing-window-v7" style="position: relative; z-index: 1;">
+            <div class="pricing-grid-v7">
+                
+                <!-- 1. WANDERER Tier -->
+                <div class="iridescent-card">
+                    <div class="card-content">
+                        <h3 class="card-title-v8">WANDERER</h3>
+                        <p class="card-subtitle-v8">Perfect for developers & testing.</p>
+                        <div class="card-price-wrap">
+                            <span class="card-price-val">$0</span>
+                            <span class="card-price-period">/mo</span>
+                        </div>
+                        <ul class="card-features-v8">
+                            <li>1,000 API Verifications /mo</li>
+                            <li>Solana Devnet Etching</li>
+                            <li>Single AI-Biy Node (Base checks)</li>
+                            <li>Community Discord Support</li>
+                        </ul>
+                        <button class="btn-card-v8 btn-ghost-v8">Start Building</button>
+                    </div>
+                </div>
+
+                <!-- 2. BIY Tier (Highlighted) -->
+                <div class="iridescent-card card-biy-v8">
+                    <div class="card-biy-badge">MOST POPULAR</div>
+                    <div class="card-content">
+                        <h3 class="card-title-v8">BIY</h3>
+                        <p class="card-subtitle-v8">Corporate ESG compliance engine.</p>
+                        <div class="card-price-wrap">
+                            <span class="card-price-val">$500</span>
+                            <span class="card-price-period">/mo</span>
+                        </div>
+                        <ul class="card-features-v8">
+                            <li>50,000 API Verifications /mo</li>
+                            <li>Solana Mainnet (Gasless TXs included)</li>
+                            <li>Multi-Agent Consensus (3 AI Nodes)</li>
+                            <li>Live Solscan TX Dashboard</li>
+                        </ul>
+                        <button class="btn-card-v8 btn-primary-v8">Upgrade to Biy</button>
+                    </div>
+                </div>
+
+                <!-- 3. KHAN Tier -->
+                <div class="iridescent-card">
+                    <div class="card-content">
+                        <h3 class="card-title-v8">KHAN</h3>
+                        <p class="card-subtitle-v8">For states & global enterprises.</p>
+                        <div class="card-price-wrap">
+                            <span class="card-price-val">Custom</span>
+                        </div>
+                        <ul class="card-features-v8">
+                            <li>Unlimited Verifications</li>
+                            <li>Dedicated Validator Node</li>
+                            <li>Custom AI-Biy Fine-tuning</li>
+                            <li>24/7 Dedicated SLA Support</li>
+                        </ul>
+                        <button class="btn-card-v8 btn-dark-v8">Contact Sales</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- ═══════════════════════════════════════
+          TACTICAL MAP (STAYING IN THE ENGINE)
+          ═══════════════════════════════════════ -->
+    <section class="steppe-activity" aria-label="Network Activity Map">
+        <div class="section-inner">
+            <div class="steppe-map" role="img" aria-label="Aktobe region network node">
+                <div class="map-aktobe-dot" aria-hidden="true"></div>
+                <div id="aktobe-fire" class="signal-fire" aria-hidden="true"></div>
+                <div class="map-label">[REGION: AKTOBE_IT_HUB]</div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══ IDENTITY VAULT ═══ -->
+    <section id="proofs" class="identity-vault" aria-label="Crystallized reputation proofs">
+        <div class="section-inner">
+            <div class="vault-header">
+                <div class="reveal">
+                    <span class="section-label reveal reveal-delay-1">The Great Shezhire</span>
+                    <h2 class="section-title reveal reveal-delay-2">Crystallized <span class="accent">Proofs</span></h2>
+                </div>
+                <div class="impact-counter">
+                    <span class="impact-label">Network Impact</span>
+                    <div id="stat-impact" class="impact-value" aria-live="polite">14,208</div>
+                </div>
+            </div>
+            <div class="vault-container" id="sbt-vault" role="list" aria-label="Soulbound token badges"></div>
+            <div id="vault-empty" class="vault-empty" hidden>
+                <p>No crystals yet. Complete a ritual to earn your first proof.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer" role="contentinfo">
+        <div class="section-inner footer-inner" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; align-items: start;">
+            <div class="footer-brand">
+                <span class="logo-text" style="font-size:1.2rem">ProtoQol</span>
+                <p class="footer-text">© 2026 Digital Zheti Zhargy Engine.<br/>Built for Solana Decentralathon.</p>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-heading">Protocol</h4>
+                <a href="#how-it-works" class="footer-link--dim">How It Works</a>
+                <a href="#pricing" class="footer-link--dim">API Pricing</a>
+                <a href="#proofs" class="footer-link--dim">Live Proofs</a>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-heading">Connect</h4>
+                <a href="https://t.me/qaiyrym_bot" target="_blank" rel="noopener noreferrer" class="footer-link">Telegram Bot ↗</a>
+                <a href="https://explorer.solana.com" target="_blank" rel="noopener noreferrer" class="footer-link--dim">Solana Explorer ↗</a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link--dim">GitHub ↗</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Animation Libraries (Leonardo.ai Style) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        if (typeof gsap === 'undefined') return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Card Scaling Reveal
+        gsap.utils.toArray('.pipe-card, .juicy-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top bottom-=50",
+                    toggleActions: "play none none reverse",
+                },
+                opacity: 0,
+                y: 50,
+                scale: 0.9,
+                duration: 0.8,
+                ease: "back.out(1.7)",
+                delay: i * 0.1
+            });
+        });
+
+        // Parallax Marquee
+        gsap.to('.marquee-content', {
+            scrollTrigger: {
+                trigger: '.marquee-transition',
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true
+            },
+            x: -200,
+            ease: "none"
+        });
+
+        // Hero Text Separation & Blur
+        gsap.to('.line-l', {
+            scrollTrigger: {
+                trigger: '#hero',
+                start: "top top",
+                end: "bottom top",
+                scrub: 1
+            },
+            x: -150,
+            opacity: 0,
+            filter: "blur(20px)"
+        });
+        gsap.to('.line-r', {
+            scrollTrigger: {
+                trigger: '#hero',
+                start: "top top",
+                end: "bottom top",
+                scrub: 1
+            },
+            x: 150,
+            opacity: 0,
+            filter: "blur(20px)"
+        });
+    });
+</script>
+</body>
+</html>
