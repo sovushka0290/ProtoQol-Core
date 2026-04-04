@@ -1,4 +1,52 @@
-.env
+# === Python ===
 __pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# === Environment ===
+.env
+.env.local
+venv/
+.venv/
+
+# === Database ===
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# === Solana / Security ===
+temp_wallet_*.json
+master_key.json
+*.json.bak
+
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Node ===
 node_modules/
+yarn-error.log
+
+# === Build ===
+target/
+*.lock
+!Cargo.lock
+
+# === Logs ===
+*.log
+uvicorn.log
+server_v4.log
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Backups ===
+*.bak*
+*.tar.gz

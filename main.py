@@ -6,6 +6,7 @@ The World's First Machine-Readable Ethical Consensus Protocol
 """
 
 import time
+import asyncio
 import uvicorn
 import io
 import csv
@@ -52,16 +53,19 @@ app.add_middleware(
 async def anchor_integrity_task(user_id: str, mission_id: str, integrity_hash: str, verdict: str):
     """
     Background Task: Anchors the AI Council decision to Solana Devnet.
-    Uses 'Account Abstraction' to map TG ID to a Solana Keypair.
+    Full Pipeline: Propose Deed → Oracle Voting → SBT Mint (if ADAL)
     """
     try:
         nomad_kp = solana_client.get_nomad_wallet(str(user_id))
-        log.info(f"[SOLANA_BACKBONE] ⛓️ Anchoring for {user_id} ({nomad_kp.pubkey()[:8]}...)")
+        log.info(f"[SOLANA_BACKBONE] ⛓️ Anchoring for {user_id} ({str(nomad_kp.pubkey())[:8]}...)")
         
         if verdict == "ADAL" and not SIMULATION_MODE:
-            # Propose Deed + Multi-Oracle Voting
+            # Deed ID must be < 32 bytes for Solana seeds
+            safe_deed_id = f"D_{integrity_hash[:20]}"
+            
+            # Phase 1: Propose Deed + Multi-Oracle Voting
             tx_sig = await solana_client.propose_deed_on_chain(
-                deed_id=f"HACK_{mission_id}_{user_id}",
+                deed_id=safe_deed_id,
                 nomad_pubkey=nomad_kp.pubkey(),
                 proposer_kp=MASTER_AUTHORITY_KEY,
                 mission_id=mission_id,
@@ -72,18 +76,26 @@ async def anchor_integrity_task(user_id: str, mission_id: str, integrity_hash: s
             # Sync TX to Database for Public Mirror
             database.update_deed_status(integrity_hash, str(tx_sig), "finalized")
 
-            # Auto-voting from BIY Oracles
+            # Phase 2: Auto-voting from BIY Oracles (Consensus = 3 votes)
             for agent in ["AUDITOR", "SKEPTIC"]:
                 await solana_client.vote_deed_on_chain(
-                    deed_id=f"HACK_{mission_id}_{user_id}",
+                    deed_id=safe_deed_id,
                     oracle_agent_name=agent,
                     verdict_adal=True,
                     nomad_pubkey=nomad_kp.pubkey(),
                     proposer_pubkey=MASTER_AUTHORITY_KEY.pubkey()
                 )
-            log.info(f"[SOLANA_BACKBONE] ✅ Discussion Anchored & SBT Minted.")
+
+            # Phase 3: Mint Soulbound Integrity Token (SBT) to Nomad
+            sbt_result = await solana_client.mint_integrity_sbt(
+                nomad_user_id=str(user_id),
+                integrity_hash=integrity_hash,
+                verdict=verdict,
+                mission_id=mission_id,
+            )
+            log.info(f"[SOLANA_BACKBONE] ✅ Full Pipeline Complete: Deed + Votes + SBT → {sbt_result.get('status')}")
         else:
-            log.info("[SOLANA_BACKBONE] 🛡️ Simulation/ARAM skip. Record locally.")
+            log.info("[SOLANA_BACKBONE] 🛡️ ARAM/Simulation skip. Record locally.")
 
     except Exception as e:
         log.error(f"[SOLANA_BACKBONE] ❌ Anchorage Failure: {e}")
@@ -106,7 +118,7 @@ async def process_b2b_inquiry(data: InquirySubmission):
     log.info(f"📜 [INQUIRY_TEXT] {data.message}")
     
     # Simulate a small delay for 'Anchoring' feel
-    time.sleep(0.4)
+    await asyncio.sleep(0.4)
     
     return {
         "status": "success",
@@ -233,9 +245,26 @@ async def engine_health():
     return {
         "engine": ENGINE_NAME,
         "status": "OPERATIONAL",
+        "version": VERSION,
+        "simulation_mode": SIMULATION_MODE,
         "nodes": ["AUDITOR", "SKEPTIC", "SOCIAL_BIY", "MASTER_BIY"],
         "metrics": stats,
-        "solana_rpc": "DEVNET_ACTIVE"
+        "solana_rpc": "DEVNET_ACTIVE",
+        "sbt_engine": "ACTIVE",
+    }
+
+@app.get("/api/v1/sbt/check/{user_id}", tags=["Soulbound_Token"])
+async def check_sbt_status(user_id: str):
+    """
+    Judges can check if a Soulbound Integrity Token exists for a specific nomad.
+    Demonstrates the full AI → Decision → On-Chain → SBT pipeline.
+    """
+    nomad_kp = solana_client.get_nomad_wallet(user_id)
+    return {
+        "user_id": user_id,
+        "nomad_wallet": str(nomad_kp.pubkey()),
+        "note": "After ADAL verdict, an SBT is minted to this wallet automatically.",
+        "explorer": f"https://explorer.solana.com/address/{nomad_kp.pubkey()}?cluster=devnet",
     }
 
 @app.on_event("startup")

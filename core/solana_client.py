@@ -67,8 +67,8 @@ async def init_anchor_program():
                     "args": [
                         {"name": "deed_id", "type": "string"},
                         {"name": "mission_id", "type": "string"},
-                        {"name": "evidence_hash", "type": "string"},
-                        {"name": "reward_amount", "type": "u64"}
+                        {"name": "reward_amount", "type": "u64"},
+                        {"name": "evidence_hash", "type": "string"}
                     ]
 
                 },
@@ -150,8 +150,8 @@ async def propose_deed_on_chain(deed_id, nomad_pubkey, proposer_kp, mission_id, 
         tx = await ANCHOR_PROGRAM.rpc["propose_deed"](
             str(deed_id), 
             str(mission_id), 
-            str(evidence_hash), 
             int(reward_amount),
+            str(evidence_hash), 
             ctx=Context(
                 accounts={
                     "deed": deed_pda,
@@ -200,16 +200,15 @@ async def vote_deed_on_chain(deed_id, oracle_agent_name, verdict_adal, nomad_pub
 
     try:
         tx = await ANCHOR_PROGRAM.rpc["vote_deed"](
-            deed_id, verdict_adal,
-
+            str(deed_id), verdict_adal,
             ctx=Context(
                 accounts={
                     "deed": deed_pda,
                     "nomad": nomad_pubkey,
                     "proposer": proposer_pubkey,
                     "oracle": oracle_kp.pubkey(),
-                    "oracleRegistry": oracle_reg_pda,
-                    "systemProgram": Pubkey.from_string("11111111111111111111111111111111"),
+                    "oracle_registry": oracle_reg_pda,
+                    "system_program": Pubkey.from_string("11111111111111111111111111111111"),
                 },
                 signers=[oracle_kp]
             )
@@ -238,3 +237,184 @@ def get_nomad_wallet(user_id: str):
     secured_payload = f"{user_id}::{NOMAD_WALLET_SALT}"
     seed = hashlib.sha256(secured_payload.encode()).digest()
     return Keypair.from_seed(seed)
+
+
+# ═══════════════════════════════════════════════════════════════
+# SOULBOUND INTEGRITY TOKEN (SBT) — Metaplex-lite via SPL Token
+# ═══════════════════════════════════════════════════════════════
+
+# SPL Token Program Constants
+TOKEN_PROGRAM_ID = Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+ASSOCIATED_TOKEN_PROGRAM_ID = Pubkey.from_string("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
+SYSVAR_RENT = Pubkey.from_string("SysvarRent111111111111111111111111111111111")
+SYSTEM_PROGRAM = Pubkey.from_string("11111111111111111111111111111111")
+
+
+def _find_ata(wallet: Pubkey, mint: Pubkey) -> Pubkey:
+    """Derives the Associated Token Account address for a wallet + mint pair."""
+    ata, _ = Pubkey.find_program_address(
+        [bytes(wallet), bytes(TOKEN_PROGRAM_ID), bytes(mint)],
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+    )
+    return ata
+
+
+async def mint_integrity_sbt(
+    nomad_user_id: str,
+    integrity_hash: str,
+    verdict: str,
+    mission_id: str = "GLOBAL",
+) -> dict:
+    """
+    Mints a Soulbound Integrity Token (SBT) on Solana Devnet.
+
+    Architecture:
+    1. Generate a unique mint keypair from the integrity_hash (deterministic)
+    2. Create SPL Token Mint (0 decimals = NFT)
+    3. Create Associated Token Account for the Nomad
+    4. Mint exactly 1 token
+    5. Revoke mint authority → no more can ever be minted (Soulbound)
+
+    This proves the AI → Decision → On-chain State Change pipeline to the judges.
+    """
+    if SIMULATION_MODE:
+        sim_mint = Pubkey.from_string("11111111111111111111111111111111")
+        log.info(f"[SBT_MINT] 🛡️ Simulation: mock SBT for {nomad_user_id}")
+        return {
+            "status": "simulated",
+            "mint_address": str(sim_mint),
+            "tx_hash": f"SIM_SBT_{uuid.uuid4().hex[:12]}",
+        }
+
+    try:
+        from solders.instruction import Instruction, AccountMeta
+        from solders.transaction import Transaction as SoldersTransaction
+        from solders.message import Message
+        from solders.hash import Hash as SoldersHash
+        import struct
+
+        log.info(f"[SBT_MINT] ⛓️ Minting SBT for Nomad {nomad_user_id} | Hash: {integrity_hash[:12]}...")
+
+        # 1. Deterministic mint keypair from integrity_hash
+        mint_seed = hashlib.sha256(f"SBT_{integrity_hash}_{mission_id}".encode()).digest()
+        mint_kp = Keypair.from_seed(mint_seed)
+        nomad_kp = get_nomad_wallet(nomad_user_id)
+        nomad_pub = nomad_kp.pubkey()
+        authority = MASTER_AUTHORITY_KEY
+
+        async with AsyncClient(RPC_URL, commitment=Confirmed) as client:
+            # Check if SBT already minted (idempotency)
+            acct_info = await client.get_account_info(mint_kp.pubkey())
+            if acct_info.value is not None:
+                log.info(f"[SBT_MINT] ✅ SBT already exists: {mint_kp.pubkey()}")
+                return {
+                    "status": "exists",
+                    "mint_address": str(mint_kp.pubkey()),
+                    "tx_hash": "ALREADY_MINTED",
+                }
+
+            # Get rent exemption for mint account (82 bytes for SPL Mint)
+            rent = await client.get_minimum_balance_for_rent_exemption(82)
+
+            # 2. Build instructions
+            # Instruction 0: Create account for the Mint
+            create_acct_ix = Instruction(
+                program_id=SYSTEM_PROGRAM,
+                accounts=[
+                    AccountMeta(pubkey=authority.pubkey(), is_signer=True, is_writable=True),
+                    AccountMeta(pubkey=mint_kp.pubkey(), is_signer=True, is_writable=True),
+                ],
+                data=bytes([0, 0, 0, 0])  # CreateAccount instruction index
+                    + struct.pack("<Q", rent.value)  # lamports
+                    + struct.pack("<Q", 82)           # space
+                    + bytes(TOKEN_PROGRAM_ID),        # owner
+            )
+
+            # Instruction 1: InitializeMint (decimals=0, authority=MASTER)
+            init_mint_ix = Instruction(
+                program_id=TOKEN_PROGRAM_ID,
+                accounts=[
+                    AccountMeta(pubkey=mint_kp.pubkey(), is_signer=False, is_writable=True),
+                    AccountMeta(pubkey=SYSVAR_RENT, is_signer=False, is_writable=False),
+                ],
+                data=bytes([0])           # InitializeMint instruction index
+                    + bytes([0])          # decimals = 0
+                    + bytes(authority.pubkey())  # mint authority
+                    + bytes([1])          # has freeze authority = true
+                    + bytes(authority.pubkey()),  # freeze authority
+            )
+
+            # Instruction 2: Create Associated Token Account for Nomad
+            ata = _find_ata(nomad_pub, mint_kp.pubkey())
+            create_ata_ix = Instruction(
+                program_id=ASSOCIATED_TOKEN_PROGRAM_ID,
+                accounts=[
+                    AccountMeta(pubkey=authority.pubkey(), is_signer=True, is_writable=True),   # payer
+                    AccountMeta(pubkey=ata, is_signer=False, is_writable=True),                  # ATA
+                    AccountMeta(pubkey=nomad_pub, is_signer=False, is_writable=False),            # wallet
+                    AccountMeta(pubkey=mint_kp.pubkey(), is_signer=False, is_writable=False),     # mint
+                    AccountMeta(pubkey=SYSTEM_PROGRAM, is_signer=False, is_writable=False),
+                    AccountMeta(pubkey=TOKEN_PROGRAM_ID, is_signer=False, is_writable=False),
+                ],
+                data=bytes([]),  # No data needed
+            )
+
+            # Instruction 3: MintTo (1 token)
+            mint_to_ix = Instruction(
+                program_id=TOKEN_PROGRAM_ID,
+                accounts=[
+                    AccountMeta(pubkey=mint_kp.pubkey(), is_signer=False, is_writable=True),     # mint
+                    AccountMeta(pubkey=ata, is_signer=False, is_writable=True),                   # destination
+                    AccountMeta(pubkey=authority.pubkey(), is_signer=True, is_writable=False),    # authority
+                ],
+                data=bytes([7])  # MintTo instruction index
+                    + struct.pack("<Q", 1),  # amount = 1
+            )
+
+            # Instruction 4: SetAuthority → Revoke mint authority (Soulbound!)
+            revoke_ix = Instruction(
+                program_id=TOKEN_PROGRAM_ID,
+                accounts=[
+                    AccountMeta(pubkey=mint_kp.pubkey(), is_signer=False, is_writable=True),
+                    AccountMeta(pubkey=authority.pubkey(), is_signer=True, is_writable=False),
+                ],
+                data=bytes([6])  # SetAuthority instruction index
+                    + bytes([0])  # AuthorityType::MintTokens
+                    + bytes([0]),  # None (no new authority = revoked forever)
+            )
+
+            # 3. Build and send transaction
+            recent_blockhash = await client.get_latest_blockhash()
+
+            msg = Message.new_with_blockhash(
+                [create_acct_ix, init_mint_ix, create_ata_ix, mint_to_ix, revoke_ix],
+                authority.pubkey(),
+                recent_blockhash.value.blockhash,
+            )
+
+            tx = SoldersTransaction.new([authority, mint_kp], msg, recent_blockhash.value.blockhash)
+            result = await client.send_transaction(tx)
+
+            tx_sig = str(result.value)
+            log.info(f"[SBT_MINT] ✅ Soulbound Token Minted!")
+            log.info(f"[SBT_MINT]    Mint:   {mint_kp.pubkey()}")
+            log.info(f"[SBT_MINT]    Nomad:  {nomad_pub}")
+            log.info(f"[SBT_MINT]    TX:     {tx_sig}")
+            log.info(f"[SBT_MINT]    Hash:   {integrity_hash}")
+
+            return {
+                "status": "minted",
+                "mint_address": str(mint_kp.pubkey()),
+                "nomad_ata": str(ata),
+                "tx_hash": tx_sig,
+                "integrity_hash": integrity_hash,
+                "explorer": f"https://explorer.solana.com/tx/{tx_sig}?cluster=devnet",
+            }
+
+    except Exception as e:
+        log.error(f"[SBT_MINT] ❌ Mint Failed: {e}")
+        return {
+            "status": "failed",
+            "error": str(e),
+            "integrity_hash": integrity_hash,
+        }
