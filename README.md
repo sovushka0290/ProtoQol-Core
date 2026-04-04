@@ -8,6 +8,8 @@
   ![Gemini](https://img.shields.io/badge/Gemini_2.0-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
   ![Anchor](https://img.shields.io/badge/Anchor_Framework-00C2FF?style=for-the-badge)
 
+  [🌐 ProtoQol Ecosystem Hub (Live Demo)](https://protoqol.vercel.app/hub.html)
+
   <h3>Case 2: AI + Blockchain — Autonomous Smart Contracts</h3>
   
   <p><b>ProtoQol</b> is a decentralized integrity engine where an AI multi-agent swarm (the "Biy Council") autonomously verifies ESG and social impact claims, reaches consensus, and executes on-chain actions — escrow release, oracle voting, and Soulbound Token minting — without human intervention.</p>
