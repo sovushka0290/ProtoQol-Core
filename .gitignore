@@ -50,3 +50,7 @@ Thumbs.db
 # === Backups ===
 *.bak*
 *.tar.gz
+venv/
+*.tar.gz
+*.db
+*.log
