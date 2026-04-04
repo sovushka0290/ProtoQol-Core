@@ -240,6 +240,18 @@ def update_campaign_payout(campaign_id: int, amount: int):
     conn.commit()
     conn.close()
 
+def get_deed_by_hash(integrity_hash: str) -> dict | None:
+    """
+    Core Search Engine: Retrieves full audit trail for public verification.
+    """
+    conn = get_db_connection()
+    c = conn.cursor()
+    c.execute('SELECT * FROM deeds WHERE integrity_hash = ?', (integrity_hash,))
+    row = c.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
 def update_deed_status(integrity_hash: str, tx_hash: str, status: str):
     """
     Updates both tx_hash and on-chain status of a deed.

@@ -15,7 +15,7 @@ load_dotenv()
 # Master Registry
 VERSION = "3.8.5"
 # 📦 PROTOCOL SIMULATION ENGINE (Enable for unstable network conditions/demos)
-SIMULATION_MODE = False
+SIMULATION_MODE = True
 ENGINE_NAME = "ProtoQol Decentralized Integrity Engine"
 
 # Persistence Layer settings
@@ -73,7 +73,7 @@ def get_next_engine_api_key():
     return ai_keys.get_key()
 
 
-AI_TIMEOUT = 12.0
+AI_TIMEOUT = 30.0
 
 # ═══════════════════════════════════════════════════════════════
 # SECURITY & AUTH
