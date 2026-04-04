@@ -3,136 +3,538 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProtoQol | B2B Enterprise Dashboard</title>
+    <title>ProtoQol | Enterprise Command Center</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&family=Space+Grotesk:wght@700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Phase 1: Core Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Phase 2: Nomad Cyberpunk Styling -->
     <style>
-        body { background: #f8fafc; color: #0f172a; padding: 40px; font-family: 'Inter', sans-serif; }
-        .dashboard-container { max-width: 1200px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .card { background: #fff; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .stat-val { font-size: 2.5rem; font-weight: 800; color: #3b82f6; font-family: 'Space Grotesk'; }
-        .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; padding: 15px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.85rem; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
-        .verdict-adal { color: #10b981; font-weight: bold; }
-        .verdict-aram { color: #f43f5e; font-weight: bold; }
-        .input-group { display: flex; gap: 10px; margin-top: 20px; }
-        input { padding: 12px 20px; border-radius: 12px; border: 1px solid #e2e8f0; flex: 1; outline: none; }
-        button { padding: 12px 24px; border-radius: 12px; border: none; background: #0f172a; color: #fff; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #3b82f6; transform: translateY(-2px); }
-        .key-reveal { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-top: 15px; display: none; }
-        .key-val { font-weight: bold; font-family: 'JetBrains Mono'; color: #ef4444; }
+        :root {
+            --chart-neon: #B371FF;
+            --chart-accent: #00F0FF;
+            --chart-success: #10B981;
+            --chart-danger: #F43F5E;
+            --glass-card: rgba(15, 18, 25, 0.7);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: var(--font-secondary);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .sidebar {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-q {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent), #00F0FF);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            color: #fff;
+            font-size: 1.6rem;
+            box-shadow: 0 0 25px var(--accent-glow);
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .nav-item {
+            padding: 0.9rem 1.2rem;
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item.active, .nav-item:hover {
+            background: rgba(179, 113, 255, 0.08);
+            color: var(--accent);
+            border: 1px solid rgba(179, 113, 255, 0.15);
+        }
+
+        /* ── Main Dashboard Content ── */
+        .main-content {
+            padding: 3.5rem;
+            max-width: 1500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .db-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3.5rem;
+        }
+
+        .db-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin: 0 0 6px 0;
+            background: linear-gradient(to right, #fff, #A5B4FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── Credit Monitor & Stats ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--glass-card);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+        }
+
+        /* ── Integrity Ratio (Donut) & Feed ── */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-box {
+            background: var(--glass-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .log-box {
+            background: var(--glass-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 2.5rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* ── Data Source Badges ── */
+        .source-badge {
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            margin-left: 10px;
+        }
+        .badge-tg { background: rgba(0, 136, 204, 0.15); color: #00C2FF; border: 1px solid rgba(0, 136, 204, 0.3); }
+        .badge-api { background: rgba(179, 113, 255, 0.15); color: var(--accent); border: 1px solid rgba(179, 113, 255, 0.3); }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.04);
+            margin-bottom: 1rem;
+            transition: 0.4s;
+        }
+
+        .log-item:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        /* ── Buttons & UI Elements ── */
+        .btn-premium {
+            background: #fff;
+            color: #000;
+            padding: 1rem 2.2rem;
+            border-radius: 30px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .btn-premium:hover {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 10px 30px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        .code-title {
+            font-family: 'Outfit';
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
     </style>
 </head>
-<body>
-    <div class="dashboard-container">
-        <div class="header">
-            <div>
-                <h1 style="font-family: 'Space Grotesk'">Enterprise Dashboard</h1>
-                <p style="color: #64748b">B2B Management Console v1.0</p>
-            </div>
-            <a href="index.html" style="text-decoration: none; color: #3b82f6; font-weight: bold;">← Back to Landing</a>
-        </div>
+<body class="dark-mode">
 
-        <div class="stats-grid card">
-            <div>
-                <div class="stat-label">Total Impact Points</div>
-                <div id="total-impact" class="stat-val">0</div>
-            </div>
-            <div>
-                <div class="stat-label">Verified Deeds</div>
-                <div id="total-deeds" class="stat-val">0</div>
-            </div>
-            <div>
-                <div class="stat-label">Biy Node Status</div>
-                <div class="stat-val" style="color: #10b981">ACTIVE</div>
-            </div>
-        </div>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="index.html" class="logo-area">
+                <div class="logo-q">Q</div>
+                <span style="font-family: 'Outfit'; font-weight: 800; font-size: 1.4rem; letter-spacing: -1.2px;">ProtoQol</span>
+            </a>
 
-        <div class="card">
-            <h2 style="font-family: 'Space Grotesk'">API Gateway Security</h2>
-            <p>Generate unique API keys for your applications. All truth etching requires valid headers.</p>
-            <div class="input-group">
-                <input type="text" id="client-name" placeholder="Application Name (e.g. My-IoT-Silo)">
-                <button onclick="generateKey()">Generate API Key</button>
-            </div>
-            <div id="key-section" class="key-reveal">
-                <p>New API Key (Keep secure!): <span id="new-key" class="key-val"></span></p>
-            </div>
-        </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">📊 Overview</a>
+                <a href="#" class="nav-item">🛡️ Protocol Oracle</a>
+                <a href="#" class="nav-item">📂 ESG Audit Trail</a>
+                <a href="#" class="nav-item">⚙️ Settings</a>
+            </nav>
 
-        <div class="card">
-            <h2 style="font-family: 'Space Grotesk'">Recent Verification History</h2>
-            <div id="table-loading">Syncing with Solana Devnet...</div>
-            <table id="history-table">
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Verdict</th>
-                        <th>Impact</th>
-                        <th>TX Hash (Solana)</th>
-                    </tr>
-                </thead>
-                <tbody id="history-body"></tbody>
-            </table>
-        </div>
+            <!-- Quickstart Snippet inside Sidebar -->
+            <div style="margin-top: auto;">
+                <p class="code-title" style="font-size: 0.8rem; color: var(--text-muted); opacity: 0.5;">GATEWAY v3.8</p>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: #A5B4FC; border: 1px solid rgba(255,255,255,0.05);">
+                    curl -X POST "pq.io/v1/etch" <br>
+                    -H "X-API-Key: $PQ_KEY"
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="db-header">
+                <div>
+                    <h1>Command Center</h1>
+                    <p style="color: var(--text-muted); font-weight: 500;">Connected: <span style="color: var(--chart-success);">● Active Node</span></p>
+                </div>
+                <a href="#" class="btn-premium">
+                    <span>Generate ESG Report</span>
+                    <span style="font-size: 1.2rem;">→</span>
+                </a>
+            </header>
+
+            <!-- Credit Monitor Block (Phase 2) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">B2B API Credits</span>
+                    <div id="credits-val" class="stat-value">0</div>
+                    <p style="font-size: 0.7rem; margin-top: 10px; color: var(--chart-success);">+ Refilling on Apr 6</p>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Integrity Score</span>
+                    <div class="stat-value">98.4<span style="font-size: 1rem; color: var(--text-muted);">%</span></div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Impact</span>
+                    <div id="impact-val" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Consensus Nodes</span>
+                    <div class="stat-value">4<span style="font-size: 1rem; color: var(--text-muted);">/4</span></div>
+                </div>
+            </div>
+
+            <!-- Integrity Ratio & Live Feed Block -->
+            <div class="grid-main">
+                <!-- Ratio Chart -->
+                <div class="chart-box">
+                    <h3 style="font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem; margin-bottom: 2rem; width: 100%;">Integrity Ratio</h3>
+                    <div style="width: 100%; height: 280px; position: relative;">
+                        <canvas id="ratioChart"></canvas>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2rem; text-align: center;">Verified (ADAL) vs Discarded (ARAM)</p>
+                </div>
+
+                <!-- Live Integrity Feed -->
+                <div class="log-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 style="font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem;">Live Integrity Feed</h3>
+                        <span style="font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--chart-success);">LIVE_SYNC_ON</span>
+                    </div>
+
+                    <div id="log-feed">
+                        <!-- Example Static Item for Phase 1/2 Visualization -->
+                        <div class="log-item">
+                            <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--chart-success); box-shadow: 0 0 10px var(--chart-success);"></div>
+                            <div style="flex-grow: 1;">
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 800; font-size: 0.9rem;">Truth Etched</span>
+                                    <span class="source-badge badge-tg">Telegram App</span>
+                                </div>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono';">16:40:22 | 0x8a2f...c91d</span>
+                            </div>
+                            <div style="font-family: 'Space Grotesk'; font-weight: 800; font-size: 1.1rem;">+14.2</div>
+                        </div>
+
+                        <div class="log-item">
+                            <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--chart-danger); box-shadow: 0 0 10px var(--chart-danger);"></div>
+                            <div style="flex-grow: 1;">
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 800; font-size: 0.9rem;">Integrity Denial</span>
+                                    <span class="source-badge badge-api">API Gateway</span>
+                                </div>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono';">16:38:15 | 0x3e1d...f2a9</span>
+                            </div>
+                            <div style="font-family: 'Space Grotesk'; font-weight: 800; font-size: 1.1rem; color: var(--text-muted);">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
+    <!-- JS Phase 3: Logic & State Management -->
     <script>
         const API_BASE = "http://localhost:8000/api/v1";
-        const DEFAULT_KEY = "PQ_LIVE_DEMO_SECRET";
+        const DEFAULT_KEY = "PQ_LIVE_DEMO_SECRET"; 
+        let lastDeedId = null;
+        let ratioChart = null;
 
-        async function fetchStats() {
+        async function init() {
+            initRatioChart();
+            await fetchDashboardData();
+            
+            // Phase 3: 5-second polling for stage stability
+            setInterval(fetchDashboardData, 5000);
+            
+            // Entrance Page Animations
+            gsap.from(".stat-card", { 
+                y: 30, opacity: 0, duration: 1, stagger: 0.1, ease: "power4.out" 
+            });
+            gsap.from(".chart-box, .log-box", { 
+                opacity: 0, scale: 0.98, duration: 1.2, delay: 0.4, ease: "expo.out" 
+            });
+        }
+
+        function initRatioChart() {
+            const ctx = document.getElementById('ratioChart').getContext('2d');
+            ratioChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ADAL (Verified)', 'ARAM (Denied)'],
+                    datasets: [{
+                        data: [85, 15],
+                        backgroundColor: ['#10B981', '#F43F5E'],
+                        borderColor: 'rgba(0,0,0,0)',
+                        hoverOffset: 15,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+        }
+
+        async function fetchDashboardData() {
             try {
-                const res = await fetch(`${API_BASE}/dashboard/stats`, {
-                    headers: { "X-API-Key": DEFAULT_KEY }
-                });
-                const data = await res.json();
+                const headers = { "X-API-Key": DEFAULT_KEY };
                 
-                document.getElementById('total-impact').textContent = data.total_impact;
-                document.getElementById('total-deeds').textContent = data.total_verifications;
+                const [statsRes, usageRes] = await Promise.all([
+                    fetch(`${API_BASE}/dashboard/stats`, { headers }),
+                    fetch(`${API_BASE}/client/usage`, { headers })
+                ]);
                 
-                const tbody = document.getElementById('history-body');
-                tbody.innerHTML = '';
-                data.recent_activity.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${new Date(row.timestamp).toLocaleTimeString()}</td>
-                        <td class="${row.verdict === 'ADAL' ? 'verdict-adal' : 'verdict-aram'}">${row.verdict}</td>
-                        <td>+${row.impact_points}</td>
-                        <td><a href="https://explorer.solana.com/tx/${row.tx_hash}?cluster=devnet" target="_blank">${row.tx_hash.substring(0,24)}...</a></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-                document.getElementById('table-loading').style.display = 'none';
+                const stats = await statsRes.json();
+                const usage = await usageRes.json();
+
+                updateUI(stats, usage);
             } catch (err) {
-                console.error("Dashboard Sync Failed:", err);
+                console.error("Link Failure:", err);
             }
         }
 
-        async function generateKey() {
-            const name = document.getElementById('client-name').value;
-            if(!name) return;
-            
-            const formData = new FormData();
-            formData.append('new_client_name', name);
-            
-            const res = await fetch(`${API_BASE}/dashboard/generate_key`, {
-                method: 'POST',
-                headers: { "X-API-Key": DEFAULT_KEY },
-                body: formData
-            });
-            const data = await res.json();
-            
-            document.getElementById('key-section').style.display = 'block';
-            document.getElementById('new-key').textContent = data.api_key;
+        function updateUI(stats, usage) {
+            // Animate Numbers
+            const countTo = (id, val) => {
+                const el = document.getElementById(id);
+                const current = parseInt(el.textContent) || 0;
+                if(current !== val) {
+                    gsap.to({v: current}, {
+                        v: val, duration: 1.5,
+                        onUpdate: function() { el.textContent = Math.floor(this.targets()[0].v); }
+                    });
+                }
+            };
+
+            countTo('credits-val', usage.credits.remaining);
+            countTo('impact-val', stats.total_impact);
+
+            // Update Donut Chart
+            if (stats.recent_activity.length > 0) {
+                const adalCount = stats.recent_activity.filter(a => a.verdict === 'ADAL').length;
+                const aramCount = stats.recent_activity.length - adalCount;
+                ratioChart.data.datasets[0].data = [adalCount, aramCount];
+                ratioChart.update();
+            }
+
+            // Update Feed
+            renderFeed(stats.recent_activity);
         }
 
-        fetchStats();
-        setInterval(fetchStats, 5000);
+        function renderFeed(deeds) {
+            const container = document.getElementById('log-feed');
+            if (deeds.length === 0) return;
+
+            const firstId = deeds[0].tx_hash;
+            const isInitialLoad = !lastDeedId;
+            const hasNewData = lastDeedId && firstId !== lastDeedId;
+
+            if (isInitialLoad || hasNewData) {
+                container.innerHTML = '';
+                deeds.forEach((deed, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'log-item';
+                    
+                    // Determine Source Badge Class
+                    const src = deed.source || "API Gateway";
+                    const badgeClass = src.toLowerCase().includes('telegram') ? 'badge-tg' : 'badge-api';
+
+                    item.innerHTML = `
+                        <div style="width: 10px; height: 10px; border-radius: 50%; background: ${deed.verdict === 'ADAL' ? 'var(--chart-success)' : 'var(--chart-danger)'}; box-shadow: 0 0 10px ${deed.verdict === 'ADAL' ? 'var(--chart-success)' : 'var(--chart-danger)'};"></div>
+                        <div style="flex-grow: 1;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="font-weight: 800; font-size: 0.9rem;">${deed.verdict === 'ADAL' ? 'Truth Etched' : 'Integrity Denial'}</span>
+                                <span class="source-badge ${badgeClass}">${src}</span>
+                            </div>
+                            <span style="font-size: 0.7rem; color: var(--text-muted); font-family: 'JetBrains Mono';">${new Date(deed.timestamp).toLocaleTimeString()} | ${deed.tx_hash.substring(0,10)}...</span>
+                        </div>
+                        <div style="font-family: 'Space Grotesk'; font-weight: 800; font-size: 1.1rem;">
+                            ${deed.verdict === 'ADAL' ? '+' + deed.impact_points : '--'}
+                        </div>
+                    `;
+                    container.appendChild(item);
+
+                    // GSAP Entrance for new entry
+                    if (hasNewData && index === 0) {
+                        gsap.from(item, { 
+                            x: -30, opacity: 0, duration: 0.8, 
+                            backgroundColor: "rgba(16, 185, 129, 0.2)",
+                            clearProps: "all"
+                        });
+                    }
+                });
+                lastDeedId = firstId;
+            }
+        }
+
+        async function downloadESGReport() {
+            // Phase 4: Export Stream
+            const btn = document.querySelector('.btn-premium');
+            btn.style.opacity = "0.5";
+            btn.innerText = "Generating...";
+            
+            try {
+                const res = await fetch(`${API_BASE}/campaigns/1/report`);
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `PQ_Audit_Report_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                alert("Protocol Export Failed. Ensure backend is synced.");
+            } finally {
+                btn.style.opacity = "1";
+                btn.innerText = "Generate ESG Report";
+            }
+        }
+
+        // Initialize Command Center
+        window.onload = init;
     </script>
 </body>
 </html>

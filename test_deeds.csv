@@ -1,0 +1,10 @@
+mission_id,description,nomad_id,source
+eco_asar,"Cleaned up 5kg of plastic from Aktobe riverbank.",nomad_aktobe_1,Telegram App
+elders_aktobe,"Delivered medication to 3 elderly neighbors.",nomad_aktobe_2,Telegram App
+it_mentorship,"Provided 3 hours of free Python tutoring.",nomad_it_3,API Gateway
+eco_asar,"Organized a community trash collection day.",nomad_aktobe_3,Telegram App
+elders_aktobe,"Helping with grocery shopping for the disabled.",nomad_aktobe_4,Telegram App
+it_mentorship,"Built a small web app for a local charity.",nomad_it_2,API Gateway
+eco_asar,"Planted 10 pine trees near the university.",nomad_aktobe_5,Telegram App
+elders_aktobe,"Read books to children in the local hospital.",nomad_aktobe_6,API Gateway
+eco_asar,"Toxic Waste Dumping - Trial Denial.",tox_user,API Gateway
