@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProtoQol x QAIYRYM | Ecosystem Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-blue: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --text-main: #FFFFFF;
+            --text-dim: rgba(255, 255, 255, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: 'Outfit', sans-serif; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Background Background */
+        .ambient-glow {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+        /* HERO SECTION */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            color: var(--accent-blue);
+            margin-bottom: 24px;
+            /* Initially hidden via JS now */
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            letter-spacing: -4px;
+            line-height: 0.85;
+            margin-bottom: 40px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin-bottom: 60px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .btn-premium {
+            padding: 1.4rem 3.5rem;
+            border-radius: 60px;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            position: relative;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-premium:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 40px rgba(255,255,255,0.15);
+        }
+
+        /* VIDEO SHOWCASE */
+        .video-section { padding: 120px 0; opacity: 0; transform: translateY(50px); }
+        .video-wrapper {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            backdrop-filter: blur(40px);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+        }
+        .video-label-tag {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            z-index: 5;
+        }
+        .video-title-tag {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            z-index: 5;
+        }
+
+        /* ECOSYSTEM SPLIT */
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            padding: 120px 0;
+        }
+
+        .eco-card {
+            padding: 5rem 4rem;
+            border-radius: 50px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(60px);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .eco-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 50%);
+            opacity: 0; transition: 0.6s;
+        }
+
+        .eco-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .eco-card:hover::before { opacity: 1; }
+
+        .eco-icon { font-size: 4rem; margin-bottom: 2.5rem; }
+        .eco-title { font-size: 2.8rem; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+        .eco-text { font-size: 1.15rem; color: var(--text-dim); line-height: 1.7; font-weight: 300; }
+
+        .eco-cta {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            font-weight: 950;
+            letter-spacing: 3px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        .eco-cta span { width: 40px; height: 1px; background: #fff; transition: 0.3s; }
+        .eco-card:hover .eco-cta span { width: 60px; background: var(--accent-blue); }
+
+        /* FOOTER */
+        footer {
+            padding: 80px 0;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .ecosystem-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 4rem; }
+            .container { padding: 0 25px; }
+            .eco-card { padding: 3rem 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <section class="hero container">
+        <span class="hero-label">THE TRUST PROTOCOL</span>
+        <h1 class="hero-title">ProtoQol <br/> <span style="color: var(--accent-blue);">x QAIYRYM</span></h1>
+        <p class="hero-subtitle">The decentralized infrastructure of radical transparency. AI judges the present. Blockchain archives the truth. Reclaiming Amanat for the digital world.</p>
+        <button class="btn-premium" id="pitch-scroll">WATCH THE VISION</button>
+    </section>
+
+    <section id="vision" class="video-section container">
+        <div class="video-wrapper">
+            <span class="video-label-tag">PITCH / CASE_STUDY_2026</span>
+            <h2 class="video-title-tag">How we return Amanat <br/>to the digital age.</h2>
+            <div style="font-size: 4rem; z-index: 5; background: #fff; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; cursor: pointer; transition: 0.4s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <span style="margin-left: 10px;">▶</span>
+            </div>
+            <!-- Dynamic Aura Glow -->
+            <div style="position: absolute; width: 150%; height: 150%; background: radial-gradient(circle at center, var(--accent-blue) 0%, transparent 40%); opacity: 0.15; filter: blur(100px);"></div>
+        </div>
+    </section>
+
+    <section class="ecosystem-grid container">
+        <!-- QAIYRYM (B2C) -->
+        <a href="https://t.me/qaiyrym_bot" target="_blank" class="eco-card" id="card-qaiyrym">
+            <div class="eco-icon">📱</div>
+            <h3 class="eco-title">QAIYRYM <br/> Volunteers</h3>
+            <p class="eco-text">Radical transparency for social missions. Shadow Wallets, JIT-Privacy, and secure OTP verification in a seamless Telegram Mini App. Volunteering without Web3 friction.</p>
+            <div class="eco-cta">OPEN MINI APP <span></span></div>
+        </a>
+
+        <!-- ProtoQol (B2B) -->
+        <a href="https://protoqol.vercel.app/" class="eco-card" id="card-protoqol" style="border-color: rgba(59, 130, 246, 0.4);">
+            <div class="eco-icon">⚙️</div>
+            <h3 class="eco-title">ProtoQol <br/> Engine</h3>
+            <p class="eco-text">Zero-Trust infrastructure for enterprise accountability. Multi-agent Biy Oracle consensus and immutable record anchoring on Solana. The backbone of digital integrity.</p>
+            <div class="eco-cta" style="color: var(--accent-blue);">ACCESS CORE ENGINE <span style="background: var(--accent-blue);"></span></div>
+        </a>
+    </section>
+
+    <footer>
+        Built in Aktobe. Deployed for the World. 2026.
+    </footer>
+
+    <script>
+        // PREMIUM GSAP HUB ENGINE (Failsafe Pattern)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+                const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.5 }});
+
+                // Hero Entry (Safe from logic)
+                tl.from(".hero-label", { opacity: 0, y: 20, delay: 0.3 })
+                  .from(".hero-title", { opacity: 0, scale: 0.94 }, "-=1.2")
+                  .from(".hero-subtitle", { opacity: 0, y: 20 }, "-=1.2")
+                  .from(".btn-premium", { opacity: 0, y: 20 }, "-=1.2");
+
+                // Video Preview Reveal
+                gsap.from(".video-section", {
+                    scrollTrigger: {
+                        trigger: ".video-section",
+                        start: "top bottom-=80",
+                    },
+                    opacity: 0,
+                    y: 40,
+                    duration: 1.5,
+                    ease: "expo.out"
+                });
+
+                // Card Reveal Sequence
+                gsap.from(".eco-card", {
+                    scrollTrigger: {
+                        trigger: ".ecosystem-grid",
+                        start: "top bottom-=100",
+                    },
+                    opacity: 0,
+                    y: 60,
+                    stagger: 0.2,
+                    duration: 1.8,
+                    ease: "expo.out"
+                });
+
+                // Smooth Scroll for Button
+                document.getElementById('pitch-scroll').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    gsap.to(window, { duration: 1.5, scrollTo: { y: "#vision", offsetY: 50 }, ease: "expo.inOut" });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
