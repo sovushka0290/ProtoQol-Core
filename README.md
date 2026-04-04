@@ -314,5 +314,10 @@ ProtoQol/
   <p>Built for <b>Decentrathon — National Solana Hackathon 2026</b></p>
   <p><i>"The truth doesn't need to be loud, it just needs to be on the blockchain."</i></p>
   <br>
+  <p align="center">
+    <b>Built for the National Solana Hackathon by Decentrathon</b><br>
+    <i>Case 2: Tokenization of Real-World Assets (Autonomous Smart Contracts)</i><br>
+    <b>Copyright (c) 2026 Alikhan Bakhtybay. All rights reserved.</b>
+  </p>
   <p>Solo Founder • 17 years old • Aktobe, Kazakhstan 🇰🇿</p>
 </div>

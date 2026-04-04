@@ -16,6 +16,8 @@ import os
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
+# (c) 2026 Alikhan Bakhtybay. All rights reserved.
+# Project: QAIYRYM / ProtoQol
 from fastapi import FastAPI, HTTPException, Request, File, UploadFile, Form, BackgroundTasks, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
