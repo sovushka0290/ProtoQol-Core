@@ -1194,7 +1194,7 @@
 
             <!-- Actions & Toggles -->
             <div class="nav-actions-v6">
-                <a href="javascript:void(0)" id="wallet-trigger" class="btn-filled-v6">CONNECT WALLET</a>
+                <a href="javascript:void(0)" id="launch-app-btn" class="btn-filled-v6 glow-on-hover">Launch App</a>
                 <!-- Hamburger Button (Mobile Only) -->
                 <button id="menu-btn-v6" class="menu-btn-v6" aria-label="Open Menu">
                     <span></span><span></span><span></span>
@@ -2254,6 +2254,54 @@
             <!-- Dynamic Content -->
         </div>
     </div>
+    <!-- ═══════════════════════════════════════
+          NOMAD TERMINAL (Launch App Modal)
+          ═══════════════════════════════════════ -->
+    <div id="nomad-terminal-overlay" class="modal-overlay" style="z-index: 2500;"></div>
+    <div id="nomad-terminal" class="about-modal" style="max-width: 900px; background: #06080D; border-color: rgba(0, 255, 163, 0.2); padding: 2.5rem;">
+        <button class="btn-close-modal" id="close-nomad-terminal" style="border-color: rgba(0, 255, 163, 0.3); color: #00FFA3;">✕</button>
+        
+        <!-- Terminal Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(0, 255, 163, 0.2); padding-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-family: monospace; color: #00FFA3; font-weight: 800; letter-spacing: 2px; font-size: 0.9rem;">[ NOMAD_TERMINAL v3.8 ]</span>
+                <span id="ht-chip" style="font-size: 0.7rem; padding: 4px 10px; border-radius: 999px; background: rgba(0, 255, 163, 0.1); border: 1px solid rgba(0, 255, 163, 0.3); color: #00FFA3; font-weight: 800; letter-spacing: 1px;">● IDLE</span>
+            </div>
+            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3); font-family: monospace;">PROTO[Q]OL_ENGINE</span>
+        </div>
+
+        <!-- Mission Select -->
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-size: 0.7rem; color: rgba(255,255,255,0.4); letter-spacing: 2px; margin-bottom: 0.5rem; display: block; font-weight: 800;">ACTIVE MANDATE</label>
+            <select id="mission-select" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,255,163,0.2); border-radius: 12px; padding: 12px 16px; color: #fff; font-size: 0.95rem; font-family: 'Inter', sans-serif;">
+                <option value="">-- SELECT MANDATE --</option>
+                <option value="mission-01">[RED CRESCENT] Emergency Supply Verification</option>
+                <option value="mission-02">[UNDP] Carbon Offset Audit</option>
+            </select>
+        </div>
+
+        <!-- Deed Input -->
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-size: 0.7rem; color: rgba(255,255,255,0.4); letter-spacing: 2px; margin-bottom: 0.5rem; display: block; font-weight: 800;">INTEGRITY REPORT</label>
+            <textarea id="deed-description" placeholder="Describe your social impact deed for AI-Biy Consensus..." style="width: 100%; min-height: 100px; background: rgba(255,255,255,0.03); border: 1px solid rgba(0,255,163,0.15); border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 0.95rem; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+            <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+                <span id="char-limit-hint" style="font-size: 0.7rem; color: rgba(255, 75, 75, 0.8); transition: 0.3s;">Minimum 15 characters</span>
+                <span id="char-counter" style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">0 / 2000</span>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <button id="submit-deed" disabled style="width: 100%; padding: 14px; border: 1px solid rgba(0, 255, 163, 0.4); background: rgba(0, 255, 163, 0.08); color: #00FFA3; font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; border-radius: 12px; cursor: pointer; margin-bottom: 1.5rem; transition: 0.3s; opacity: 0.5;">⟁ ETCH DEED</button>
+
+        <!-- Live Terminal -->
+        <div style="border-top: 1px solid rgba(0,255,163,0.15); padding-top: 1rem;">
+            <div style="font-size: 0.65rem; color: rgba(0,255,163,0.5); letter-spacing: 2px; font-weight: 800; margin-bottom: 0.8rem;">LIVE CONSENSUS LOG</div>
+            <div id="live-terminal" style="min-height: 120px; max-height: 200px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.85rem; color: #00FFA3; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(0,255,163,0.1);">
+                <div class="lt-line"><span class="lt-prompt">></span> <span class="lt-text" style="color: rgba(0,255,163,0.6);">SYSTEM_READY // AWAITING_DEED_SUBMISSION...</span></div>
+            </div>
+        </div>
+    </div>
+
     <!-- X-RAY CONSENSEUS INSPECTOR MODAL -->
     <div id="inspector-overlay" class="modal-overlay" style="z-index: 3000;"></div>
     <div id="consensus-inspector" class="consensus-inspector">
