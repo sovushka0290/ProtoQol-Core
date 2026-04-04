@@ -1194,7 +1194,7 @@
 
             <!-- Actions & Toggles -->
             <div class="nav-actions-v6">
-                <a href="javascript:void(0)" id="launch-app-btn" class="btn-filled-v6">Launch App</a>
+                <a href="javascript:void(0)" id="wallet-trigger" class="btn-filled-v6">CONNECT WALLET</a>
                 <!-- Hamburger Button (Mobile Only) -->
                 <button id="menu-btn-v6" class="menu-btn-v6" aria-label="Open Menu">
                     <span></span><span></span><span></span>
@@ -1768,6 +1768,42 @@
             </div>
         </div>
     </section>
+
+    <!-- SOLANA WALLET INTERACTION ENGINE -->
+    <script>
+        async function connectSolanaWallet() {
+            const btn = document.getElementById('wallet-trigger');
+            if (!btn) return;
+
+            try {
+                const isPhantomInstalled = window.solana && window.solana.isPhantom;
+                const isSolflareInstalled = window.solflare;
+                
+                let provider = null;
+                if (isPhantomInstalled) provider = window.solana;
+                else if (isSolflareInstalled) provider = window.solflare;
+
+                if (provider) {
+                    const response = await provider.connect();
+                    const pubKey = response.publicKey.toString();
+                    btn.innerHTML = pubKey.substring(0, 4) + '...' + pubKey.substring(pubKey.length - 4);
+                    btn.style.background = "#3b82f6";
+                    btn.style.color = "#fff";
+                    btn.style.borderColor = "#3b82f6";
+                    console.log("PROTOQOL_CONNECTED:", pubKey);
+                } else {
+                    window.open('https://phantom.app/', '_blank');
+                }
+            } catch (err) {
+                console.error("WALLET_REJECTED:", err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('wallet-trigger');
+            if(btn) btn.addEventListener('click', connectSolanaWallet);
+        });
+    </script>
 
     <script>
         // FAQ ADVANCED LOGIC (TABS + ACCORDION)
