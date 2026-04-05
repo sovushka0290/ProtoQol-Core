@@ -88,7 +88,7 @@ async def enterprise_etch_deed(
     # 2. AI CONSENSUS (Multi-Agent Neural Audit)
     log.info(f"[B2B_GATEWAY] Neural Audit started for client: {client['name']}")
     ai_res = await ai_engine.analyze_deed(
-        description, mission_info, campaign_id=None, meta={"lat": lat, "lon": lon, "timestamp": ts}
+        description, mission_info, meta={"lat": lat, "lon": lon, "timestamp": ts}
     )
     
     verdict = ai_res.get("verdict", "ARAM")

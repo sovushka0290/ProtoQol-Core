@@ -87,6 +87,10 @@ def init_db():
         INSERT OR IGNORE INTO clients (name, api_key, plan_type, credits_total, credits_used) 
         VALUES ('Aqtobe_B2B_Partner', 'PQ_LIVE_DEMO_SECRET', 'Pro', 1000, 0)
     """)
+    cursor.execute("""
+        INSERT OR IGNORE INTO clients (name, api_key, plan_type, credits_total, credits_used) 
+        VALUES ('Developer_Sandbox', 'PQ_DEV_TEST_2026', 'Pro', 9999, 0)
+    """)
     
     conn.commit()
     conn.close()

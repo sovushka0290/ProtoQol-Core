@@ -28,6 +28,7 @@ from core.config import log, ENGINE_NAME, VERSION, DB_WAL_MODE, MASTER_AUTHORITY
 
 from core import solana_client, database, state, ai_engine
 from core.exceptions import ProtocolError
+from routes import gateway
 
 # ═══════════════════════════════════════════════════════════════
 # ENGINE INITIALIZATION
@@ -38,6 +39,8 @@ app = FastAPI(
     version=VERSION,
     description="🚀 Universal Verification Protocol for ESG & Social Integrity."
 )
+
+app.include_router(gateway.router)
 
 # 1. API GATEWAY: Broad CORS for B2B Widgets
 app.add_middleware(

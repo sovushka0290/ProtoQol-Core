@@ -392,7 +392,11 @@ async def mint_integrity_sbt(
                 recent_blockhash.value.blockhash,
             )
 
-            tx = SoldersTransaction.new([authority, mint_kp], msg, recent_blockhash.value.blockhash)
+            tx = SoldersTransaction(
+                from_keypairs=[authority, mint_kp],
+                message=msg,
+                recent_blockhash=recent_blockhash.value.blockhash
+            )
             result = await client.send_transaction(tx)
 
             tx_sig = str(result.value)
