@@ -41,42 +41,42 @@
 
 ---
 
-## 🌍 Экосистема QAIYRYM: Первый клиент протокола ProtoQol
+## 🌍 QAIYRYM Ecosystem: The First Client of the ProtoQol Protocol
 
-> **Примечание:** На хакатон проект заявлен под именем **QAIYRYM**, так как ProtoQol является его фундаментальным уровнем (Integrity Layer). **QAIYRYM — это экосистема и интерфейс**, а **ProtoQol — технология внутри неё**.
+> **Note:** The project is submitted to the hackathon under the name **QAIYRYM**, with ProtoQol serving as its foundational Integrity Layer. **QAIYRYM is the ecosystem and user interface**, while **ProtoQol is the technology driving it under the hood**.
 
-**QAIYRYM (от каз. "Қайырым" — добродетель)** — это децентрализованная платформа в Telegram, которая объединяет волонтеров, благотворительные фонды и ESG-бизнес в единую доверяемую среду. ProtoQol выступает здесь в роли неподкупного автономного судьи.
+**QAIYRYM (from Kazakh "Қайырым" — virtue/charity)** is a decentralized Telegram-based platform that unites volunteers, charitable foundations, and ESG-driven businesses into a single trusted environment. ProtoQol acts as the incorruptible, autonomous judge within this space.
 
-### 🦸‍♂️ Для Волонтеров (Nomads)
+### 🦸‍♂️ For Volunteers (Nomads)
 
-* **Удобство Web2, мощность Web3:** Пользователи работают в привычном Telegram Mini-App. Им не нужно устанавливать кошельки — система автоматически создает теневые (shadow) аккаунты Solana на базе их Telegram ID.
-* **Гарантированное вознаграждение:** Выполнив миссию (например, доставка продуктов пенсионерам), волонтер загружает фото-отчет **с геолокацией и временной меткой**. Если ProtoQol выносит вердикт `ADAL` (Истина), смарт-контракт на Solana автономно переводит волонтеру SOL из эскроу, а также выпускает репутационный NFT — **Integrity Soulbound Token (SBT)**, формируя его цифровой профиль социального вклада.
-* **Прозрачный рост:** Каждый подтвержденный `ADAL` вердикт увеличивает "Ауру" — динамическую репутацию волонтера. Чем выше Аура, тем более сложные и высокооплачиваемые миссии становятся доступны.
+* **Web2 Ease, Web3 Power:** Users interact via a familiar Telegram Mini-App. No wallet setup is required — the system automatically generates deterministic **Shadow Solana accounts** based on their Telegram IDs.
+* **Guaranteed Rewards:** Upon completing a mission (e.g., delivering groceries to the elderly), volunteers upload a photo report **enriched with geolocation and timestamps**. If ProtoQol issues an `ADAL` (Truth) verdict, a Solana smart contract autonomously releases SOL rewards from escrow and mints an **Integrity Soulbound Token (SBT)**, building the user's verifiable social impact profile.
+* **Transparent Growth:** Each confirmed `ADAL` verdict increases the volunteer's "Aura" — a dynamic on-chain reputation score. Higher Aura levels unlock more complex and highly-rewarded missions.
 
-### 🏢 Для Бизнеса и Фондов (B2B / ESG Спонсоры)
+### 🏢 For Businesses & Foundations (B2B / ESG Sponsors)
 
-* **Защита от скама:** Компании могут финансировать локальные инициативы, депонируя средства в смарт-контракты (PDA). Деньги уходят **только** после кросс-проверки фактов "Советом ИИ", включая анализ геолокации, временных меток и мультимодальную проверку фотографий.
-* **Прозрачная ESG-отчетность:** Никакого "гринвошинга". Бизнес получает математически доказанный аудиторский след (через SHA-256 хэши в Solana), который можно показать регуляторам или инвесторам.
-* **Webhooks в реальном времени:** Система отправляет уведомления на endpoint бизнеса при каждом достигнутом консенсусе с полными метаданными транзакции.
+* **Fraud Protection:** Organizations can fund local initiatives by depositing assets into Program Derived Accounts (PDAs). Funds are released **only** after cross-verification by the "AI Biy Council," including geolocation analysis, temporal validation, and multimodal photo audit.
+* **Transparent ESG Reporting:** Zero greenwashing. Businesses receive a mathematically proven audit trail (anchored via SHA-256 hashes on Solana) to showcase to regulators, shareholders, or investors.
+* **Real-time Webhooks:** The system dispatches automated notifications to a business endpoint upon every consensus event, providing full transaction metadata for seamless integration.
 
-### 🤲 Для Общества (Культура "Асар")
+### 🤲 For Society (The Culture of "Asar")
 
-* Платформа возрождает доверие к благотворительности. Многоуровневые детекторы мошенничества внутри ProtoQol отсекают:
-  - 📷 **Стоковые фото** — визуальный анализ через Gemini Vision
-  - 🤖 **AI-генерации** — распознавание артефактов нейросетей
-  - ♻️ **Переиспользованные отчеты** — проверка уникальности по хэшам
-  - 📍 **Фейковые локации** — кросс-валидация геометок с зоной миссии
-* Это гарантирует, что помощь доходит до реальных людей.
+* The platform restores faith in philanthropy. ProtoQol’s multi-layered fraud detection filters out:
+  - 📷 **Stock photos** — via Gemini Vision visual analysis
+  - 🤖 **AI-generations** — via neural network artifact recognition
+  - ♻️ **Recycled reports** — via hash-based uniqueness checks
+  - 📍 **Fake locations** — via geolocation cross-validation with mission zones
+* This ensures that aid reaches real people in the physical world.
 
-### Что мы презентуем
+### What We Are Presenting
 
-Мы приходим не просто с "голым протоколом", а с **полностью рабочим end-to-end продуктом**:
+We are delivering more than just a protocol — we are showcasing a **fully functional end-to-end product**:
 
-| Слой | Компонент | Технология |
+| Layer | Component | Technology |
 |------|-----------|------------|
-| **Фронтенд** | Telegram Mini-App (волонтеры) + Enterprise Dashboard (бизнес) | HTML/CSS/JS + Telegram Web App API |
-| **AI-слой** | Многоагентный рой ProtoQol ("Совет Биев") | Gemini 2.0 Flash, 4 агента |
-| **Блокчейн** | Смарт-контракты для голосований, эскроу и SBT | Solana Devnet, Anchor Framework |
+| **Frontend** | Telegram Mini-App (Volunteers) + Enterprise Dashboard (Business) | HTML/CSS/JS + Telegram Web App API |
+| **AI Layer** | ProtoQol Multi-Agent Swarm ("The Biy Council") | Gemini 2.0 Flash (4 specialized nodes) |
+| **Blockchain** | Smart contracts for voting, escrow, and SBT minting | Solana Devnet, Anchor Framework |
 
 ---
 
