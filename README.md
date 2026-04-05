@@ -159,23 +159,26 @@ ProtoQol is more than a smart contract — it is a **Trust-as-a-Service (TaaS)**
 
 ```mermaid
 graph TD
-    User(("Volunteer / NGO")) -->|"Submit Report + Photo"| Gateway["FastAPI Integrity Gateway"]
-    Gateway -->|"Multimodal Input"| Council["🧠 Neural Biy Council"]
-
-    Council --> A1["⚔️ The Auditor\nFact-checks evidence"]
-    Council --> A2["🔍 The Skeptic\nDetects fraud patterns"]
-    Council --> A3["🤝 The Social Biy\nEvaluates sincerity"]
-    Council --> A4["⚖️ Master Biy\nFinal consensus"]
-
-    A4 -->|"ADAL ✅"| Chain["Solana Devnet"]
-    A4 -->|"ARAM ❌"| Reject["Record Locally"]
-
-    Chain --> P1["propose_deed\nEscrow funds in PDA"]
-    P1 --> P2["vote_deed × 3\nOracle consensus"]
-    P2 --> P3["Auto-resolve\nRelease escrow to volunteer"]
-    P2 --> P4["mint_integrity_sbt\nSoulbound Token"]
-
-    P4 --> Mirror["🔍 Public Audit Mirror\nSHA-256 anchored"]
+    User([Volunteer/Nomad]) -->|Impact Report + Photo| Gateway[FastAPI Integrity Gateway]
+    Gateway -->|Neural Multimodal Input| BiyCouncil{<b>Neural Council of Biys</b><br/>Gemini 2.0 Flash Swarm}
+    
+    subgraph Decision_Process [Autonomous Deliberation]
+    BiyCouncil --> Auditor[🛡️ <b>Auditor</b><br/>Fact & GPS Check]
+    BiyCouncil --> Skeptic[🕵️ <b>Skeptic</b><br/>Fraud & GAN Detection]
+    BiyCouncil --> Social[✨ <b>Social Biy</b><br/>Impact & Asar Score]
+    end
+    
+    Auditor & Skeptic & Social --> Master[⚖️ <b>Master Biy</b><br/>Consensus Synthesis]
+    
+    Master -->|ADAL - Truth| Solana[🔗 <b>Solana Devnet</b>]
+    Master -->|ARAM - Fraud| Reject[❌ <b>Rejected</b><br/>Logged Locally]
+    
+    subgraph On_Chain_Settlement [Atomic Verification]
+    Solana --> Propose[propose_deed<br/>Escrow Funds]
+    Propose --> Vote[vote_deed x3<br/>Oracle Consensus]
+    Vote --> SBT[mint_integrity_sbt<br/>Soulbound Token]
+    Vote --> Reward[release_escrow<br/>Transfer SOL]
+    end
 ```
 
 ### The Autonomous Pipeline
@@ -236,12 +239,12 @@ pub struct DeedRecord {
 
 The "Biy Council" is inspired by the Kazakh steppe tradition of **Zheti Zhargy** (Seven Laws), where a council of wise men (Biys) would deliberate and reach consensus on matters of justice.
 
-| Agent | Role | What it actually checks |
-|-------|------|------------------------|
-| ⚔️ **The Auditor** | Fact-checker | Multimodal photo analysis: object detection, geolocation cross-validation (`lat/lon` vs mission zone), timestamp freshness, and EXIF metadata consistency |
-| 🔍 **The Skeptic** | Fraud detector | Reverse-image search patterns, AI-generated image artifacts (GAN fingerprints), recycled report detection via hash deduplication, and prompt injection attempts |
-| 🤝 **The Social Biy** | Impact evaluator | Assesses "Asar" (communal spirit), calculates weighted social impact score based on mission difficulty and cultural context |
-| ⚖️ **Master Biy** | Consensus judge | Aggregates all 3 node outputs. Only a unanimous or 2/3 majority vote triggers an `ADAL` on-chain settlement |
+| Agent | Role | Denial Criteria (ARAM) |
+| :--- | :--- | :--- |
+| **🛡️ Auditor** | Fact-checker | Geolocation mismatch / Requirement failure |
+| **🕵️ Skeptic** | Fraud detector | Neural artifacts / AI-generated evidence / Stock metadata |
+| **✨ Social Biy** | Impact evaluator | Low "Asar" score / Insincere or duplicate content |
+| **⚖️ Master Biy** | Consensus judge | Quorum failure / 2/3 Minority refusal |
 
 ### Technical Details
 - **Model:** Gemini 2.0 Flash (optimized for speed — target <2.5s response)
