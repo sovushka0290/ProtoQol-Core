@@ -484,6 +484,9 @@ ProtoQol/
 
 ---
 
+> "I realized that trustless verification in philanthropy is only achievable through the total removal of human bias. ProtoQol is my attempt to replace subjective belief with autonomous, on-chain certainty."  
+> — **Alikhan Bakhtybay, Solo Founder**
+
 <div align="center">
   <p><i>"The truth doesn't need to be loud, it just needs to be on the blockchain."</i></p>
   <br>
