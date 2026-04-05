@@ -420,6 +420,11 @@ http://localhost:8000/audit/<integrity_hash>
 ```
 This opens the **Public Audit Mirror** — a full cyberpunk-styled log of the AI Council deliberation.
 
+> 💡 **For Judges & Reviewers**  
+> The backend engine runs locally for this showcase. To test the full user experience immediately without setup, try our live Telegram Mini App:  
+> 🚀 **Public Demo:** [t.me/qaiyrym_bot](https://t.me/qaiyrym_bot)  
+> 🌐 **Ecosystem Hub:** [protoqol.vercel.app/hub.html](https://protoqol.vercel.app/hub.html)
+
 ---
 
 ## 📁 Project Structure
@@ -485,7 +490,7 @@ ProtoQol/
   <p align="center">
     <b>Built for Decentrathon — National Solana Hackathon 2026</b><br>
     <i>Case 2: AI + Blockchain — Autonomous Smart Contracts</i><br>
-    <b>Copyright (c) 2026 Alikhan Bakhtybay. All rights reserved.</b>
+    © 2026 Alikhan Bakhtybay. Licensed under the <a href="./LICENSE">MIT License</a>.
   </p>
   <p>Solo Founder • 17 years old • Aktobe, Kazakhstan 🇰🇿</p>
 </div>
