@@ -50,16 +50,23 @@
 ### 🦸‍♂️ Для Волонтеров (Nomads)
 
 * **Удобство Web2, мощность Web3:** Пользователи работают в привычном Telegram Mini-App. Им не нужно устанавливать кошельки — система автоматически создает теневые (shadow) аккаунты Solana на базе их Telegram ID.
-* **Гарантированное вознаграждение:** Выполнив миссию (например, доставка продуктов пенсионерам), волонтер загружает фото-отчет. Если ProtoQol выносит вердикт `ADAL` (Истина), смарт-контракт на Solana автономно переводит волонтеру SOL из эскроу, а также выпускает репутационный NFT — **Integrity Soulbound Token (SBT)**, формируя его цифровой профиль социального вклада.
+* **Гарантированное вознаграждение:** Выполнив миссию (например, доставка продуктов пенсионерам), волонтер загружает фото-отчет **с геолокацией и временной меткой**. Если ProtoQol выносит вердикт `ADAL` (Истина), смарт-контракт на Solana автономно переводит волонтеру SOL из эскроу, а также выпускает репутационный NFT — **Integrity Soulbound Token (SBT)**, формируя его цифровой профиль социального вклада.
+* **Прозрачный рост:** Каждый подтвержденный `ADAL` вердикт увеличивает "Ауру" — динамическую репутацию волонтера. Чем выше Аура, тем более сложные и высокооплачиваемые миссии становятся доступны.
 
 ### 🏢 Для Бизнеса и Фондов (B2B / ESG Спонсоры)
 
-* **Защита от скама:** Компании могут финансировать локальные инициативы, депонируя средства в смарт-контракты (PDA). Деньги уходят только после кросс-проверки фактов "Советом ИИ".
+* **Защита от скама:** Компании могут финансировать локальные инициативы, депонируя средства в смарт-контракты (PDA). Деньги уходят **только** после кросс-проверки фактов "Советом ИИ", включая анализ геолокации, временных меток и мультимодальную проверку фотографий.
 * **Прозрачная ESG-отчетность:** Никакого "гринвошинга". Бизнес получает математически доказанный аудиторский след (через SHA-256 хэши в Solana), который можно показать регуляторам или инвесторам.
+* **Webhooks в реальном времени:** Система отправляет уведомления на endpoint бизнеса при каждом достигнутом консенсусе с полными метаданными транзакции.
 
 ### 🤲 Для Общества (Культура "Асар")
 
-* Платформа возрождает доверие к благотворительности. Детекторы мошенничества внутри ProtoQol отсекают стоковые фото, AI-генерации и сговоры, гарантируя, что помощь доходит до реальных людей.
+* Платформа возрождает доверие к благотворительности. Многоуровневые детекторы мошенничества внутри ProtoQol отсекают:
+  - 📷 **Стоковые фото** — визуальный анализ через Gemini Vision
+  - 🤖 **AI-генерации** — распознавание артефактов нейросетей
+  - ♻️ **Переиспользованные отчеты** — проверка уникальности по хэшам
+  - 📍 **Фейковые локации** — кросс-валидация геометок с зоной миссии
+* Это гарантирует, что помощь доходит до реальных людей.
 
 ### Что мы презентуем
 
@@ -202,20 +209,63 @@ pub struct DeedRecord {
 
 The "Biy Council" is inspired by the Kazakh steppe tradition of **Zheti Zhargy** (Seven Laws), where a council of wise men (Biys) would deliberate and reach consensus on matters of justice.
 
-| Agent | Role | Behavior |
-|-------|------|----------|
-| ⚔️ **The Auditor** | Fact-checker | Verifies photographic evidence and object detection |
-| 🔍 **The Skeptic** | Fraud detector | Searches for stock images, AI-generated content, recycled reports |
-| 🤝 **The Social Biy** | Impact evaluator | Assesses "Asar" (communal spirit), calculates social impact score |
-| ⚖️ **Master Biy** | Consensus judge | Synthesizes all reports into final `ADAL` or `ARAM` verdict |
+| Agent | Role | What it actually checks |
+|-------|------|------------------------|
+| ⚔️ **The Auditor** | Fact-checker | Multimodal photo analysis: object detection, geolocation cross-validation (`lat/lon` vs mission zone), timestamp freshness, and EXIF metadata consistency |
+| 🔍 **The Skeptic** | Fraud detector | Reverse-image search patterns, AI-generated image artifacts (GAN fingerprints), recycled report detection via hash deduplication, and prompt injection attempts |
+| 🤝 **The Social Biy** | Impact evaluator | Assesses "Asar" (communal spirit), calculates weighted social impact score based on mission difficulty and cultural context |
+| ⚖️ **Master Biy** | Consensus judge | Aggregates all 3 node outputs. Only a unanimous or 2/3 majority vote triggers an `ADAL` on-chain settlement |
 
 ### Technical Details
 - **Model:** Gemini 2.0 Flash (optimized for speed — target <2.5s response)
-- **Multimodal:** Accepts text descriptions + photo evidence (base64 PNG)
-- **Mode switching:** `REAL_MISSION` (strict) vs `SHOWCASE_DEMO` (lenient for demo)
+- **Multimodal input:** Text descriptions + photo evidence (base64 PNG) + geolocation metadata (`lat`, `lon`) + timestamps
+- **Mode switching:** `REAL_MISSION` (strict — full fraud detection) vs `SHOWCASE_DEMO` (lenient for live demos)
 - **Integrity anchor:** SHA-256 hash of the raw AI response = `integrity_hash`
 - **API key rotation:** Round-robin pool across multiple Gemini keys to prevent 429 rate limits
 - **Resilience:** Hard timeout (30s) + automatic fallback to `REVIEW_NEEDED` (never fakes a positive verdict)
+
+---
+
+## 🔒 Anti-Fraud: How QAIYRYM Makes Cheating Impossible
+
+Fraud prevention is not an afterthought — it is **baked into every layer** of the protocol. Here is how each type of fraud is neutralized:
+
+### 📍 Geolocation & Timestamp Verification
+
+Every mission report carries metadata: `lat`, `lon`, and `timestamp`. The AI Auditor cross-validates this against the mission's expected geographic zone. A report claiming aid delivery in Aktobe but geotagged in Almaty will trigger an automatic `ARAM` (reject).
+
+```python
+# Metadata passed to the Biy Council for every verification
+meta = {"lat": 50.2839, "lon": 57.1670, "timestamp": "2026-04-05T10:30:00Z"}
+ai_res = await ai_engine.analyze_deed(description, mission_info, meta=meta, photo_bytes=photo)
+```
+
+### 📷 Multimodal Photo Forensics (Gemini Vision)
+
+Photos aren't just stored — they are **analyzed pixel by pixel** by Gemini 2.0 Flash:
+
+| Check | How it works | Example |
+|-------|-------------|----------|
+| **Object detection** | AI verifies the described objects actually appear in the photo | "Delivered food" → must detect food/packages in image |
+| **Stock photo detection** | The Skeptic searches for visual patterns typical of stock photography | Professional lighting, watermarks, perfect composition → `FRAUD` |
+| **AI-generated image detection** | Checks for GAN artifacts, unnatural textures, and deepfake patterns | DALL-E/Midjourney outputs → `FRAUD` |
+| **Photo recycling** | SHA-256 hash of photo bytes compared against previous submissions | Same photo used twice → `ARAM` |
+
+### ⏰ Temporal Integrity
+
+- Reports are timestamped at submission and cross-checked against mission active periods
+- The `integrity_hash` includes the timestamp, making retroactive tampering detectable
+- Stale reports (submitted days after the claimed action) receive lower confidence scores
+
+### 🛡️ Multi-Agent Adversarial Design
+
+The key architectural insight: **The Skeptic and The Auditor are adversaries by design.** The Skeptic's entire purpose is to find flaws in the evidence that The Auditor might accept. This creates a natural checks-and-balances system where no single AI agent can unilaterally approve a fraudulent claim.
+
+```
+Auditor says PASS + Skeptic says FRAUD → Master Biy investigates deeper → likely ARAM
+Auditor says PASS + Skeptic says CLEAN → Master Biy approves → ADAL
+All 3 agents say FRAUD → Instant ARAM, no appeal
+```
 
 ---
 
