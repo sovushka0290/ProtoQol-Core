@@ -14,7 +14,7 @@
   
   <p><b>ProtoQol</b> is a decentralized integrity engine where an AI multi-agent swarm (the "Biy Council") autonomously verifies ESG and social impact claims, reaches consensus, and executes on-chain actions — escrow release, oracle voting, and Soulbound Token minting — without human intervention.</p>
 
-  [🚀 Live Bot](https://t.me/qaiyrym_bot) • [📹 Demo Video](./ref_video.mp4) • [🔍 View Program on Solana Explorer](https://explorer.solana.com/address/EdrjHLN9K9eogJ5Pui8WYJRAghdN4knAdAoDcZesAirc?cluster=devnet)
+  [🚀 Live Bot](https://t.me/qaiyrym_bot) • [📹 Demo Video](https://youtu.be/WfGhMsGE2M8) • [🔍 View Program on Solana Explorer](https://explorer.solana.com/address/EdrjHLN9K9eogJ5Pui8WYJRAghdN4knAdAoDcZesAirc?cluster=devnet)
   
   > **Note:** Backend runs locally. See [Quick Start](#-quick-start) to launch in 60 seconds.
 </div>
