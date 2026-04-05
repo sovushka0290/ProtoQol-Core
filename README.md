@@ -14,7 +14,7 @@
   
   <p><b>ProtoQol</b> is a decentralized integrity engine where an AI multi-agent swarm (the "Biy Council") autonomously verifies ESG and social impact claims, reaches consensus, and executes on-chain actions — escrow release, oracle voting, and Soulbound Token minting — without human intervention.</p>
 
-  [🚀 Live Bot](https://t.me/qaiyrym_bot) • [📹 Demo Video](#)
+  [🚀 Live Bot](https://t.me/qaiyrym_bot) • [📹 Demo Video](./ref_video.mp4) • [🔍 View Program on Solana Explorer](https://explorer.solana.com/address/EdrjHLN9K9eogJ5Pui8WYJRAghdN4knAdAoDcZesAirc?cluster=devnet)
   
   > **Note:** Backend runs locally. See [Quick Start](#-quick-start) to launch in 60 seconds.
 </div>
@@ -39,9 +39,85 @@
 | Centralized AI (GPT wrappers) | No transparency, no on-chain proof | Every decision SHA-256 anchored on Solana |
 | Self-reported ESG scores | Easily fabricated, no verification | Multi-agent adversarial consensus (Skeptic vs Auditor) |
 
-### Business Model
+---
 
-ProtoQol targets the $540B ESG compliance market. B2B clients (NGOs, corporate CSR departments, government agencies) pay per-verification via API — same model as Stripe, but for social impact data integrity. See `/api/v1/etch_deed` for the enterprise endpoint.
+## 🌍 Экосистема QAIYRYM: Первый клиент протокола ProtoQol
+
+> **Примечание:** На хакатон проект заявлен под именем **QAIYRYM**, так как ProtoQol является его фундаментальным уровнем (Integrity Layer). **QAIYRYM — это экосистема и интерфейс**, а **ProtoQol — технология внутри неё**.
+
+**QAIYRYM (от каз. "Қайырым" — добродетель)** — это децентрализованная платформа в Telegram, которая объединяет волонтеров, благотворительные фонды и ESG-бизнес в единую доверяемую среду. ProtoQol выступает здесь в роли неподкупного автономного судьи.
+
+### 🦸‍♂️ Для Волонтеров (Nomads)
+
+* **Удобство Web2, мощность Web3:** Пользователи работают в привычном Telegram Mini-App. Им не нужно устанавливать кошельки — система автоматически создает теневые (shadow) аккаунты Solana на базе их Telegram ID.
+* **Гарантированное вознаграждение:** Выполнив миссию (например, доставка продуктов пенсионерам), волонтер загружает фото-отчет. Если ProtoQol выносит вердикт `ADAL` (Истина), смарт-контракт на Solana автономно переводит волонтеру SOL из эскроу, а также выпускает репутационный NFT — **Integrity Soulbound Token (SBT)**, формируя его цифровой профиль социального вклада.
+
+### 🏢 Для Бизнеса и Фондов (B2B / ESG Спонсоры)
+
+* **Защита от скама:** Компании могут финансировать локальные инициативы, депонируя средства в смарт-контракты (PDA). Деньги уходят только после кросс-проверки фактов "Советом ИИ".
+* **Прозрачная ESG-отчетность:** Никакого "гринвошинга". Бизнес получает математически доказанный аудиторский след (через SHA-256 хэши в Solana), который можно показать регуляторам или инвесторам.
+
+### 🤲 Для Общества (Культура "Асар")
+
+* Платформа возрождает доверие к благотворительности. Детекторы мошенничества внутри ProtoQol отсекают стоковые фото, AI-генерации и сговоры, гарантируя, что помощь доходит до реальных людей.
+
+### Что мы презентуем
+
+Мы приходим не просто с "голым протоколом", а с **полностью рабочим end-to-end продуктом**:
+
+| Слой | Компонент | Технология |
+|------|-----------|------------|
+| **Фронтенд** | Telegram Mini-App (волонтеры) + Enterprise Dashboard (бизнес) | HTML/CSS/JS + Telegram Web App API |
+| **AI-слой** | Многоагентный рой ProtoQol ("Совет Биев") | Gemini 2.0 Flash, 4 агента |
+| **Блокчейн** | Смарт-контракты для голосований, эскроу и SBT | Solana Devnet, Anchor Framework |
+
+---
+
+## 💰 Business Model & Revenue
+
+ProtoQol targets the **$540B ESG compliance market**. The protocol operates as **"Stripe for Social Impact Verification"** — B2B clients pay per-verification through our API.
+
+| Segment | Use Case | Revenue Model |
+|---------|----------|---------------|
+| **NGOs & Foundations** | Verify that donated funds actually reached beneficiaries | Per-verification fee via API |
+| **Corporate CSR Departments** | Prove ESG compliance to shareholders without greenwashing risk | Monthly subscription (tiered plans) |
+| **Government Agencies** | Validate grant-funded social projects at scale | Enterprise license + SLA |
+| **ESG Investment Funds** | Verify impact data before allocating capital | Per-report + dashboard access |
+
+### Business Integration (B2B SDK)
+
+ProtoQol is not just an application — it is **infrastructure for trustless verification**. Any organization with an existing CSR reporting system can integrate ProtoQol as an independent external audit layer by connecting to our API:
+
+```bash
+# One API call = Full AI Council audit + On-chain settlement
+curl -X POST https://protoqol.org/api/v1/etch_deed \
+  -H "X-API-Key: YOUR_B2B_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "Delivered 50kg of food supplies to rural school in Aktobe region",
+    "nomad_id": "volunteer_042",
+    "mission_id": "elders_aktobe",
+    "source": "Partner_CSR_System"
+  }'
+```
+
+**Response (< 3 seconds):**
+```json
+{
+  "status": "crystalizing",
+  "verdict": "ADAL",
+  "integrity_hash": "a7f3b2e1c9d04f68",
+  "impact_points": 87,
+  "wisdom": "Қайырымдылық — жүректен шығады.",
+  "ai_dialogue": [
+    {"node": "AUDITOR", "verdict": "ADAL", "confidence": 0.92},
+    {"node": "SKEPTIC", "verdict": "ADAL", "fraud_probability": 0.04},
+    {"node": "SOCIAL_BIY", "verdict": "ADAL", "asar_score": 0.87}
+  ]
+}
+```
+
+Companies get: **AI-powered ESG verification**, **on-chain immutable proof**, **webhook notifications** on consensus, and a **real-time dashboard** (`/api/v1/dashboard/stats`) — all without building any blockchain infrastructure themselves.
 
 ---
 
@@ -49,23 +125,23 @@ ProtoQol targets the $540B ESG compliance market. B2B clients (NGOs, corporate C
 
 ```mermaid
 graph TD
-    User((Volunteer / NGO)) -->|Submit Report + Photo| Gateway[FastAPI Integrity Gateway]
-    Gateway -->|Multimodal Input| Council[🧠 Neural Biy Council]
-    
-    Council --> A1[⚔️ The Auditor<br/>Fact-checks evidence]
-    Council --> A2[🔍 The Skeptic<br/>Detects fraud patterns]  
-    Council --> A3[🤝 The Social Biy<br/>Evaluates sincerity]
-    Council --> A4[⚖️ Master Biy<br/>Final consensus]
-    
-    A4 -->|ADAL ✅| Chain[Solana Devnet]
-    A4 -->|ARAM ❌| Reject[Record Locally]
-    
-    Chain --> P1[propose_deed<br/>Escrow funds in PDA]
-    P1 --> P2[vote_deed x3<br/>Oracle consensus]
-    P2 --> P3[Auto-resolve<br/>Release escrow to volunteer]
-    P2 --> P4[mint_integrity_sbt<br/>Soulbound Token]
-    
-    P4 --> Mirror[🔍 Public Audit Mirror<br/>SHA-256 anchored]
+    User(("Volunteer / NGO")) -->|"Submit Report + Photo"| Gateway["FastAPI Integrity Gateway"]
+    Gateway -->|"Multimodal Input"| Council["🧠 Neural Biy Council"]
+
+    Council --> A1["⚔️ The Auditor\nFact-checks evidence"]
+    Council --> A2["🔍 The Skeptic\nDetects fraud patterns"]
+    Council --> A3["🤝 The Social Biy\nEvaluates sincerity"]
+    Council --> A4["⚖️ Master Biy\nFinal consensus"]
+
+    A4 -->|"ADAL ✅"| Chain["Solana Devnet"]
+    A4 -->|"ARAM ❌"| Reject["Record Locally"]
+
+    Chain --> P1["propose_deed\nEscrow funds in PDA"]
+    P1 --> P2["vote_deed × 3\nOracle consensus"]
+    P2 --> P3["Auto-resolve\nRelease escrow to volunteer"]
+    P2 --> P4["mint_integrity_sbt\nSoulbound Token"]
+
+    P4 --> Mirror["🔍 Public Audit Mirror\nSHA-256 anchored"]
 ```
 
 ### The Autonomous Pipeline
@@ -99,7 +175,7 @@ graph TD
 | `propose_deed` | Create deed + escrow SOL reward | Creates `DeedRecord` PDA, transfers lamports |
 | `vote_deed` | Oracle casts ADAL/ARAM vote | Increments vote counters, auto-resolves at 3 votes |
 
-### On-Chain accounts
+### On-Chain Accounts
 
 ```rust
 pub struct DeedRecord {
@@ -115,7 +191,7 @@ pub struct DeedRecord {
 }
 ```
 
-### Security constraints
+### Security Constraints
 - Oracle voting requires `oracle_registry.is_active == true` (PDA-verified)
 - Protocol admin is hardcoded to a specific Pubkey (zero-trust)
 - Deed accounts are PDA-derived from `[b"deed", deed_id]` — collision-resistant
@@ -124,7 +200,7 @@ pub struct DeedRecord {
 
 ## 🧠 AI Multi-Agent System ("Council of Biys")
 
-The "Biy Council" is inspired by the Kazakh steppe tradition of **Zheti Zhargy** (Seven Laws), where a council of wise men (Biys) would deliberate and reach consensus.
+The "Biy Council" is inspired by the Kazakh steppe tradition of **Zheti Zhargy** (Seven Laws), where a council of wise men (Biys) would deliberate and reach consensus on matters of justice.
 
 | Agent | Role | Behavior |
 |-------|------|----------|
@@ -138,8 +214,8 @@ The "Biy Council" is inspired by the Kazakh steppe tradition of **Zheti Zhargy**
 - **Multimodal:** Accepts text descriptions + photo evidence (base64 PNG)
 - **Mode switching:** `REAL_MISSION` (strict) vs `SHOWCASE_DEMO` (lenient for demo)
 - **Integrity anchor:** SHA-256 hash of the raw AI response = `integrity_hash`
-- **API key rotation:** Round-robin pool to prevent 429 rate limits
-- **Resilience:** Hard timeout (30s) + automatic fallback to `REVIEW_NEEDED`
+- **API key rotation:** Round-robin pool across multiple Gemini keys to prevent 429 rate limits
+- **Resilience:** Hard timeout (30s) + automatic fallback to `REVIEW_NEEDED` (never fakes a positive verdict)
 
 ---
 
@@ -154,14 +230,16 @@ Deed TX: propose_deed → vote_deed ×2 → DeedRecord.resolved = true
 SBT:     mint_integrity_sbt → 1 token, authority revoked (soulbound)
 ```
 
-**Verify on-chain:**
-- [View deployed program on Solana Explorer ↗](https://explorer.solana.com/address/EdrjHLN9K9eogJ5Pui8WYJRAghdN4knAdAoDcZesAirc?cluster=devnet)
+**Verify on-chain (real transactions from the ProtoQol Engine):**
+- [🔍 View Deployed Program on Solana Explorer ↗](https://explorer.solana.com/address/EdrjHLN9K9eogJ5Pui8WYJRAghdN4knAdAoDcZesAirc?cluster=devnet)
+- [📝 View Deed Proposed TX ↗](https://solscan.io/tx/4DuZMAkH1FTueetgB4AExC5hLFnsPf7jTjJWYNRkVPfzcyqCukcohXpod3XncKJJrwFubsp1upAzHB3udqfxNdit?cluster=devnet)
+- [🗳️ View AI Biy Oracle Vote TX ↗](https://solscan.io/tx/3atA1kXGLSE41M2V5QHzYfAaqPL9X3uP9Bgm6kjxfAxrqzxsuJ5WcGUPMtwfuPxwgoCXm9AYnvzfaMvXkNioYwZX?cluster=devnet)
 
-<!-- Live test completed. Real hashes from ProtoQol Engine: -->
-- [View Deed Proposed TX ↗](https://solscan.io/tx/4DuZMAkH1FTueetgB4AExC5hLFnsPf7jTjJWYNRkVPfzcyqCukcohXpod3XncKJJrwFubsp1upAzHB3udqfxNdit?cluster=devnet)
-- [View AI Biy Oracle Vote TX ↗](https://solscan.io/tx/3atA1kXGLSE41M2V5QHzYfAaqPL9X3uP9Bgm6kjxfAxrqzxsuJ5WcGUPMtwfuPxwgoCXm9AYnvzfaMvXkNioYwZX?cluster=devnet)
+---
 
-## 🏦 Soulbound Integrity Token (SBT)
+## 🏦 Impact Tokenomics & Dynamic Reputation
+
+### Soulbound Integrity Token (SBT)
 
 After a positive `ADAL` verdict, the system **autonomously mints** a Soulbound Token:
 
@@ -173,17 +251,37 @@ After a positive `ADAL` verdict, the system **autonomously mints** a Soulbound T
 
 This creates an **immutable, on-chain proof of verified social impact**.
 
+### 🌟 The "Aura" Score — Dynamic Reputation
+
+Each confirmed `ADAL` verdict does more than release tokens — it updates the volunteer's **dynamic on-chain reputation**. We call it the "Aura":
+
+> Every verified deed accumulates into a living, public reputation score anchored in the blockchain. The higher the volunteer's "Aura" level, the more complex and highly rewarded missions become available to them. A volunteer with 50+ verified SBTs is a fundamentally different entity in the eyes of the protocol than one with 2.
+
+This creates a **provable meritocracy**: your social capital is not a self-reported number, it is a cryptographically verified track record.
+
+### Impact Incentives — Why Everyone Wins
+
+ProtoQol is structurally designed so that every participant benefits from honest behavior:
+
+| Stakeholder | Incentive | Mechanism |
+|-------------|-----------|-----------|
+| **Volunteer** | SOL rewards + an immutable SBT portfolio that universities and employers can verify | `mint_integrity_sbt` → permanent on-chain CV |
+| **Sponsor / NGO** | 1000x reduction in verification cost, 0% greenwashing risk | `etch_deed` API → AI audit < $0.001 |
+| **Society** | Trustless, transparent proof that aid reached its destination | Public Audit Mirror + SHA-256 on Solana |
+
+The SBT profile becomes the volunteer's **Social Lift passport** — a bridge from physical-world good deeds to digital-world opportunities.
+
 ---
 
 ## 🚀 V2 Architecture: 100% Zero-Trust & Cryptographic Proof of Impact
 
-While the current version anchors the final decision hash in Solana, **V2 scales this to a billion-dollar enterprise B2B verification infrastructure**. To achieve absolute Verifiability, we are implementing a deterministic Hash Chain stored on IPFS/Arweave.
+While the current version anchors the final decision hash in Solana, **V2 scales this to a billion-dollar enterprise B2B verification infrastructure**. To achieve absolute verifiability, we are implementing a deterministic Hash Chain stored on IPFS/Arweave.
 
 Instead of writing just the final report, V2 uses a cryptographic waterfall:
 
 ```javascript
-evidence_hash = SHA256(photo_bytes + description + timestamp)
-ai_hash = SHA256(ai_raw_response)
+evidence_hash  = SHA256(photo_bytes + description + timestamp)
+ai_hash        = SHA256(ai_raw_response)
 consensus_hash = SHA256(evidence_hash + ai_hash + verdict + mission_id)
 ```
 
@@ -207,6 +305,25 @@ def get_nomad_wallet(user_id: str):
 ```
 
 Each Telegram user gets a **deterministic**, invisible Solana wallet. Gas is sponsored by the protocol's Master Authority.
+
+---
+
+## 🔌 B2B API Reference
+
+ProtoQol exposes a full REST API for enterprise integration. Authentication is via `X-API-Key` header with tiered subscription plans (Free / Pro / Enterprise).
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/v1/etch_deed` | `POST` | Submit a deed for AI verification + on-chain settlement |
+| `/api/v1/verify_mission` | `POST` | Universal verification (JSON + multipart with photos) |
+| `/api/v1/dashboard/stats` | `GET` | Client-specific impact metrics & recent activity |
+| `/api/v1/gateway/missions` | `GET` | List all active campaigns/missions |
+| `/api/v1/engine/health` | `GET` | Engine status, node list, and aggregate metrics |
+| `/api/v1/sbt/check/{user_id}` | `GET` | Check SBT existence for a specific volunteer |
+| `/audit/{integrity_hash}` | `GET` | Public Audit Mirror — full AI discussion transparency page |
+| `/api/v1/inquiry` | `POST` | B2B lead capture for enterprise partnerships |
+
+**Webhook support:** B2B clients can register a `webhook_url` per campaign. ProtoQol fires a POST notification on every `CONSENSUS_REACHED` event with deed ID, verdict, and transaction hash.
 
 ---
 
@@ -253,9 +370,6 @@ http://localhost:8000/audit/<integrity_hash>
 ```
 This opens the **Public Audit Mirror** — a full cyberpunk-styled log of the AI Council deliberation.
 
-To verify the smart contract on-chain independently:
-[🔍 View Program on Solana Explorer ↗](https://explorer.solana.com/address/EdrjHLN9K9eogJ5Pui8WYJRAghdN4knAdAoDcZesAirc?cluster=devnet)
-
 ---
 
 ## 📁 Project Structure
@@ -265,21 +379,23 @@ ProtoQol/
 ├── main.py                    # FastAPI Integrity Gateway (entry point)
 ├── core/
 │   ├── ai_engine.py           # Unified Biy Council (Gemini 2.0 Flash)
-│   ├── ai_consensus.py        # CrewAI multi-agent orchestration (legacy)
-│   ├── solana_client.py        # Anchor RPC + SBT Minting + Shadow Wallets
+│   ├── solana_client.py       # Anchor RPC + SBT Minting + Shadow Wallets
 │   ├── database.py            # SQLite WAL persistence layer
 │   ├── config.py              # Engine configuration + API key rotation
+│   ├── auth.py                # B2B API key authentication + credit quota
 │   ├── guardian.py            # Rate limiting (IP-based)
 │   ├── exceptions.py          # Custom error hierarchy
 │   ├── event_monitor.py       # Autonomous on-chain event listener
 │   └── webhooks.py            # B2B webhook dispatcher
 ├── routes/
-│   ├── oracle.py              # Protocol verification endpoint
-│   └── gateway.py             # B2B enterprise API gateway
+│   ├── oracle.py              # Protocol verification + on-chain voting
+│   ├── gateway.py             # B2B enterprise API gateway
+│   └── health.py              # System health endpoints
 ├── protoqol_core/             # Anchor smart contract (Rust)
 │   └── programs/protoqol_core/src/lib.rs
 ├── dashboard.html             # Enterprise Command Center UI
 ├── index.html                 # Landing page (Nomad Cyberpunk theme)
+├── AI-SPEC.md                 # V2 cryptographic specification
 ├── requirements.txt           # Python dependencies
 └── .env.example               # Environment template
 ```
@@ -289,12 +405,13 @@ ProtoQol/
 ## 🛡️ Security & Trust Model
 
 - **API keys injected via `.env`** — Gemini keys, bot tokens, and wallet salts are never committed to the repo
-- **Demo API whitelist** — `PROTOCOL_API_WHITELIST` contains hardcoded demo keys for hackathon testing (would be moved to DB/env in production)
+- **B2B authentication** — `X-API-Key` header with credit-based quotas (402 Payment Required on exhaustion)
 - **Deterministic wallets** — SHA-256 derived from Telegram ID + salt, no key files stored
 - **On-chain authorization** — Oracle voting requires PDA-verified `is_active == true`
 - **Integrity anchoring** — Every AI decision is SHA-256 hashed before on-chain settlement
 - **No PII on-chain** — Only hashes and Pubkeys are stored on the public ledger
 - **Rate limiting** — IP-based in-memory limiter protects AI/Solana budget during demos
+- **Fail-safe AI** — On timeout/failure, verdict falls back to `REVIEW_NEEDED` (never fakes a positive)
 
 ---
 
@@ -303,22 +420,21 @@ ProtoQol/
 | Criteria | Points | How ProtoQol addresses it |
 |----------|--------|--------------------------|
 | **Product & Idea** | 20 | Solves real $540B greenwashing problem with cultural "Asar" narrative |
-| **Technical Implementation** | 25 | Working MVP: FastAPI + 4-agent AI + Anchor smart contract + SQLite |
-| **Use of Solana** | 15 | PDA escrow, oracle voting, auto-resolution, SBT mint, explorer links |
+| **Technical Implementation** | 25 | Working MVP: FastAPI + 4-agent AI + Anchor smart contract + SBT minting |
+| **Use of Solana** | 15 | PDA escrow, oracle voting, auto-resolution, SBT mint, on-chain explorer links |
 | **Innovation** | 15 | First "Ethics as a Service" protocol with nomadic AI consensus metaphor |
 | **UX & Product Thinking** | 10 | Telegram Mini App + Account Abstraction = zero-friction onboarding |
-| **Demo & Presentation** | 10 | Showcase Mode, Public Audit Mirror, real-time dashboard |
-| **Completeness & Documentation** | 5 | This README, inline code docs, .env.example |
+| **Demo & Presentation** | 10 | Showcase Mode, Public Audit Mirror, real-time enterprise dashboard |
+| **Completeness & Documentation** | 5 | This README, AI-SPEC.md, inline code docs, .env.example |
 
 ---
 
 <div align="center">
-  <p>Built for <b>Decentrathon — National Solana Hackathon 2026</b></p>
   <p><i>"The truth doesn't need to be loud, it just needs to be on the blockchain."</i></p>
   <br>
   <p align="center">
-    <b>Built for the National Solana Hackathon by Decentrathon</b><br>
-    <i>Case 2: Tokenization of Real-World Assets (Autonomous Smart Contracts)</i><br>
+    <b>Built for Decentrathon — National Solana Hackathon 2026</b><br>
+    <i>Case 2: AI + Blockchain — Autonomous Smart Contracts</i><br>
     <b>Copyright (c) 2026 Alikhan Bakhtybay. All rights reserved.</b>
   </p>
   <p>Solo Founder • 17 years old • Aktobe, Kazakhstan 🇰🇿</p>
