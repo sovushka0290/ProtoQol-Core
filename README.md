@@ -524,3 +524,5 @@ ProtoQol/
   </p>
   <p>Solo Founder • 17 years old • Aktobe, Kazakhstan 🇰🇿</p>
 </div>
+
+┬┴┬┴┤( ͡° ͜ʖ├┬┴┬┴ Спасибо что дочитали!
