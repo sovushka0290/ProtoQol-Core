@@ -515,12 +515,12 @@ ProtoQol/
 
 | Criteria | Points | How ProtoQol addresses it |
 |----------|--------|--------------------------|
-| **Product & Idea** | 20 | Solves real $540B greenwashing problem with cultural "Asar" narrative |
-| **Technical Implementation** | 25 | Working MVP: FastAPI + 4-agent AI + Anchor smart contract + SBT minting |
+| **Product & Idea** | 18 | Solves real $540B greenwashing problem with cultural "Asar" narrative |
+| **Technical Implementation** | 22 | Working MVP: FastAPI + 4-agent AI + Anchor smart contract + SBT minting |
 | **Use of Solana** | 15 | PDA escrow, oracle voting, auto-resolution, SBT mint, on-chain explorer links |
 | **Innovation** | 15 | First "Ethics as a Service" protocol with nomadic AI consensus metaphor |
-| **UX & Product Thinking** | 10 | Telegram Mini App + Account Abstraction = zero-friction onboarding |
-| **Demo & Presentation** | 10 | Showcase Mode, Public Audit Mirror, real-time enterprise dashboard |
+| **UX & Product Thinking** | 7 | Telegram Mini App + Account Abstraction = zero-friction onboarding |
+| **Demo & Presentation** | 4 | Showcase Mode, Public Audit Mirror, real-time enterprise dashboard |
 | **Completeness & Documentation** | 5 | This README, AI-SPEC.md, inline code docs, .env.example |
 
 ---
